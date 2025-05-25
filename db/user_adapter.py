@@ -1,7 +1,7 @@
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
-from models import User
-from engine import Engine
+from db.models import User
+from db.common.engine import Engine
 
 
 # ユーザー情報テーブル接続
@@ -16,7 +16,7 @@ class User_Adapter(Engine):
             user_id=arg_user_row.user_id,
             name=arg_user_row.name,
             password=arg_user_row.password,
-            entry_user_id="administrator",
+            entry_user_id=arg_user_row.entry_user_id,
         )
         with Session(self.engine) as session:
             session.add(user)

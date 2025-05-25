@@ -1,24 +1,21 @@
 import flet as ft
-from engine import Engine
+from db.common.engine import Engine
 
-# from user_adapter import User_Adapter
-from test_adapter import User_Adapter
+from db.create_table import Create_Table
+from db.user_adapter import User_Adapter
 
 
 def main(page: ft.Page):
     page.title = "Flet counter example"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
-    db_engine = Engine()
-    db_engine.create_table()
+    create_table = Create_Table()
+    isCreate = create_table.create_table()
+    if isCreate:
+        create_table.create_user()
 
     user_adapter = User_Adapter()
-    create_row = user_adapter.user_row
-    create_row.user_id = "999"
-    create_row.name = "998"
-    create_row.password = "997"
-    user_adapter.create_row(create_row)
-    row = user_adapter.fill_row("test104")
+    row = user_adapter.fill_row("admin")
 
     txt_number = ft.TextField(
         value=row.user_id, text_align=ft.TextAlign.RIGHT, width=100
