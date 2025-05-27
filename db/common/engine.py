@@ -12,14 +12,25 @@ class Engine:
     def __init__(self):
         self.engine = create_engine("sqlite:///db/example.db", echo=True)
         self.inspector = inspect(self.engine)
+        # セッションクラス
+        self.session = Session(self.engine)
+        # ログクラス
         self.log_row = Log()
+        # メッセージクラス
         self.message = Message()
+        # 例外エラー出力クラス
         self.create_exception_log = Create_Exception_Log()
+        # 定数クラス
         self.const = Const()
 
     # ログ追加
+    # 【引数】
+    #   arg_log_kinds：ログ種類,
+    #   arg_function_id：処理ID,
+    #   arg_log_detail：ログ詳細,
+    #   arg_user_id：操作ユーザー
     def create_log(self, arg_log_kinds, arg_function_id, arg_log_detail, arg_user_id):
-        isError = False
+        # 引数を元にログクラスをインスタンス
         log = Log(
             log_kinds=arg_log_kinds,
             function_id=arg_function_id,
@@ -27,14 +38,18 @@ class Engine:
             user_id=arg_user_id,
         )
         try:
-            with Session(self.engine) as session:
-                session.add(log)
-                session.commit()
+            # インスタンスしたログをセッションに追加
+            self.session.add(log)
+            # データベースに反映
+            self.session.commit()
         except Exception as e:
+            isError = False
+            # 例外エラーテキストファイルを出力
             isError = self.create_exception_log.create_exception_log(arg_function_id, e)
             return isError
         finally:
-            session.close()
+            # セッションを閉じる
+            self.session.close()
 
     def exception_log(self, arg_log_function_id, arg_e, arg_entry_user_id):
         message_box = Message_Box()
@@ -47,3 +62,10 @@ class Engine:
             arg_entry_user_id,
         )
         return message_box
+
+
+# 返却用
+class Return_Info:
+    def __init__(self):
+        self.return_row = None
+        self.return_message_box = Message_Box()
