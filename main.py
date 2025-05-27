@@ -1,5 +1,4 @@
 import flet as ft
-from db.common.engine import Engine
 
 from db.create_table import Create_Table
 from db.user_adapter import User_Adapter
@@ -15,10 +14,14 @@ def main(page: ft.Page):
         create_table.create_user()
 
     user_adapter = User_Adapter()
-    row = user_adapter.fill_row("admin")
+    user_adapter.user_row.user_id = "admin"
+    user_adapter.user_row.entry_user_id = "admin"
+    return_user = user_adapter.fill_user(user_adapter.user_row)
 
     txt_number = ft.TextField(
-        value=row.user_id, text_align=ft.TextAlign.RIGHT, width=100
+        value=return_user.return_user_row[0].user_id,
+        text_align=ft.TextAlign.RIGHT,
+        width=100,
     )
 
     def minus_click(e):

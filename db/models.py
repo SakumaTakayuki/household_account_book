@@ -75,9 +75,9 @@ class Log(Bass):
     # ログ番号
     log_seq: Mapped[int] = mapped_column(Integer, primary_key=True)
     # ログ種類
-    log_kinds: Mapped[str] = mapped_column(String(20), nullable=False)
+    log_kinds: Mapped[str] = mapped_column(String(1), nullable=False)
     # 処理ID
-    function_id: Mapped[str] = mapped_column(String(10), nullable=False)
+    function_id: Mapped[str] = mapped_column(String(20), nullable=False)
     # ログ詳細
     log_detail: Mapped[str] = mapped_column(Text, nullable=False)
     # 操作ユーザー
@@ -94,9 +94,11 @@ class Log(Bass):
 class Master(Bass):
     __tablename__ = "master"
     # マスタID
-    M_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    m_id: Mapped[str] = mapped_column(String(10), primary_key=True)
     # マスタコード
-    m_code: Mapped[str] = mapped_column(String(10), nullable=False)
+    m_code: Mapped[str] = mapped_column(String(10), primary_key=True)
+    # マスタテキスト
+    m_text: Mapped[str] = mapped_column(Text, nullable=False)
     # 削除フラグ
     del_flg: Mapped[str] = mapped_column(String(1), default="0")
     # 登録ユーザー
