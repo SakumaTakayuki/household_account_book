@@ -4,7 +4,7 @@ class Const:
         START = "S"
         END = "E"
         INFO = "I"
-        COUTION = "C"
+        CAUTION = "C"
         WARNING = "W"
 
     class Log_Process:
