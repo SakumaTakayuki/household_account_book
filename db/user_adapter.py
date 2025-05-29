@@ -10,30 +10,34 @@ class User_Adapter(Engine):
         self.user_row = User()
 
     # ユーザー情報取得
-    def fill_user(self, arg_user_row: User):
+    def fill_user(self, arg_fill_kbn, arg_where_user_id, arg_fill_user_id):
         return_user = Return_Info()
         str_log_function_id = self.message.Log_Function_Id.id.format(
             self.const.Log_Kinds.INFO,
             self.const.Log_Process.INSERT,
             self.const.Log_Function.USERS,
         )
+        if arg_fill_kbn == self.const.Fill_Kbn.LIST:
+            fill_kbn = self.const.Const_Text.LIST
+        else:
+            fill_kbn = arg_where_user_id
         if self.create_log(
             self.const.Log_Kinds.START,
             str_log_function_id,
             self.message.Log_Message.FILL.format(
                 self.const.Table_Name.USERS,
-                arg_user_row.user_id,
+                fill_kbn,
                 self.const.Const_Text.TEXT_BLANK,
             ),
-            arg_user_row.entry_user_id,
+            arg_fill_user_id,
         ):
             return_user.return_message_box = self.exception_log_exception()
             return return_user
         else:
-            stmt = select(User).where(User.user_id == arg_user_row.user_id)
+            stmt = select(User).where(User.user_id == arg_where_user_id)
             try:
-                return_user.return_row = self.session.scalars(stmt).all()
-                if len(return_user.return_row) == 0:
+                select_row = self.session.scalars(stmt).all()
+                if len(select_row) == 0:
                     return_user.return_message_box.message_id = "HAB001C"
                     return_user.return_message_box.message_text = (
                         self.message.Message_Box.HAB001C
@@ -43,29 +47,32 @@ class User_Adapter(Engine):
                         str_log_function_id,
                         self.message.Log_Message.Fill_NO_ROW.format(
                             self.const.Table_Name.USERS,
-                            arg_user_row.user_id,
+                            fill_kbn,
                         ),
-                        arg_user_row.entry_user_id,
+                        arg_fill_user_id,
                     ):
                         return_user.return_message_box = self.exception_log_exception()
                         return return_user
                     else:
                         return return_user
                 else:
-                    self.create_log(
+                    if self.create_log(
                         self.const.Log_Kinds.END,
                         str_log_function_id,
                         self.message.Log_Message.FILL.format(
                             self.const.Table_Name.USERS,
-                            arg_user_row.user_id,
-                            len(return_user.return_row),
+                            fill_kbn,
+                            len(select_row),
                         ),
-                        arg_user_row.entry_user_id,
-                    )
+                        arg_fill_user_id,
+                    ):
+                        return_user.return_message_box = self.exception_log_exception()
+                        return return_user
+                    return_user.return_row = select_row
                     return return_user
             except Exception as e:
                 return_user.return_message_box = self.exception_log(
-                    str_log_function_id, e, arg_user_row.entry_user_id
+                    str_log_function_id, e, arg_fill_user_id
                 )
                 return return_user
             finally:
@@ -99,8 +106,8 @@ class User_Adapter(Engine):
             )
             stmt = select(User).where(User.user_id == arg_user_row.user_id)
             try:
-                return_user.return_row = self.session.scalars(stmt).all()
-                if len(return_user.return_row) == 0:
+                select_row = self.session.scalars(stmt).all()
+                if len(select_row) == 0:
                     self.session.add(user)
                     self.session.commit()
                     return_user.return_message_box.message_id = "HAB001I"
@@ -125,7 +132,9 @@ class User_Adapter(Engine):
                     if self.create_log(
                         self.const.Log_Kinds.END,
                         str_log_function_id,
-                        str_log_detail,
+                        self.message.Log_Message.NON_INSERT.format(
+                            self.const.Table_Name.USERS, arg_user_row.user_id
+                        ),
                         arg_user_row.entry_user_id,
                     ):
                         return_user.return_message_box = self.exception_log_exception()
@@ -155,14 +164,14 @@ class User_Adapter(Engine):
             self.const.Log_Kinds.START,
             str_log_function_id,
             str_log_detail,
-            arg_user_row.entry_user_id,
+            arg_user_row.update_user_id,
         ):
             return_user.return_message_box = self.exception_log_exception()
             return return_user
         else:
             stmt = select(User).where(
                 User.user_id == arg_user_row.user_id,
-                User.update_at == arg_user_row.update_at,
+                User.update_seq == arg_user_row.update_seq,
             )
             try:
                 fill_user = self.session.scalars(stmt).first()
@@ -170,6 +179,7 @@ class User_Adapter(Engine):
                     fill_user.name = arg_user_row.name
                     fill_user.password = arg_user_row.password
                     fill_user.update_user_id = arg_user_row.update_user_id
+                    fill_user.update_seq = fill_user.update_seq + 1
                     self.session.commit()
                     return_user.return_message_box.message_id = "HAB002I"
                     return_user.return_message_box.message_text = (
@@ -179,7 +189,7 @@ class User_Adapter(Engine):
                         self.const.Log_Kinds.END,
                         str_log_function_id,
                         str_log_detail,
-                        arg_user_row.entry_user_id,
+                        arg_user_row.update_user_id,
                     ):
                         return_user.return_message_box = self.exception_log_exception()
                         return return_user
@@ -196,7 +206,75 @@ class User_Adapter(Engine):
                         self.message.Log_Message.NON_UPDATE.format(
                             self.const.Table_Name.USERS, arg_user_row.user_id
                         ),
-                        arg_user_row.entry_user_id,
+                        arg_user_row.update_user_id,
+                    ):
+                        return_user.return_message_box = self.exception_log_exception()
+                        return return_user
+                    else:
+                        return return_user
+            except Exception as e:
+                return_user.return_message_box = self.exception_log()
+                return return_user
+            finally:
+                self.session.close()
+
+    # ユーザー情報削除
+    def delete_user(self, arg_user_row: User):
+        return_user = Return_Info()
+        str_log_function_id = self.message.Log_Function_Id.id.format(
+            self.const.Log_Kinds.INFO,
+            self.const.Log_Process.DELETE,
+            self.const.Log_Function.USERS,
+        )
+        str_log_detail = self.message.Log_Message.DELETE.format(
+            self.const.Table_Name.USERS, arg_user_row.user_id
+        )
+        if self.create_log(
+            self.const.Log_Kinds.START,
+            str_log_function_id,
+            str_log_detail,
+            arg_user_row.update_user_id,
+        ):
+            return_user.return_message_box = self.exception_log_exception()
+            return return_user
+        else:
+            stmt = select(User).where(
+                User.user_id == arg_user_row.user_id,
+                User.update_seq == arg_user_row.update_seq,
+            )
+            try:
+                fill_user = self.session.scalars(stmt).first()
+                if fill_user is not None:
+                    fill_user.del_flg = self.const.Del_flg.DELETE
+                    fill_user.update_user_id = arg_user_row.update_user_id
+                    fill_user.update_seq = fill_user.update_seq + 1
+                    self.session.commit()
+                    return_user.return_message_box.message_id = "HAB003I"
+                    return_user.return_message_box.message_text = (
+                        self.message.Message_Box.HAB003I
+                    )
+                    if self.create_log(
+                        self.const.Log_Kinds.END,
+                        str_log_function_id,
+                        str_log_detail,
+                        arg_user_row.update_user_id,
+                    ):
+                        return_user.return_message_box = self.exception_log_exception()
+                        return return_user
+                    else:
+                        return return_user
+                else:
+                    return_user.return_message_box.message_id = "HAB003C"
+                    return_user.return_message_box.message_text = (
+                        self.message.Message_Box.HAB003C
+                    )
+                    if self.create_log(
+                        self.const.Log_Kinds.END,
+                        str_log_function_id,
+                        self.message.Log_Message.NON_UPDATE.format(
+                            self.const.Table_Name.USERS, arg_user_row.user_id
+                        ),
+                        arg_user_row.update_user_id,
                     ):
                         return_user.return_message_box = self.exception_log_exception()
                         return return_user
