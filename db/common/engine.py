@@ -18,7 +18,13 @@ class Engine:
     def __init__(self):
         self.engine = create_engine("sqlite:///db/example.db", echo=True)
         self.inspector = inspect(self.engine)
+<<<<<<< HEAD
         self.error_message = Error_Message()
+=======
+        # セッションクラス
+        self.session = Session(self.engine, expire_on_commit=False)
+        # ログクラス
+>>>>>>> 65862d6 (【Engine】SessionのOPにexpire_on_commit=False追加)
         self.log_row = Log()
         self.create_exception_log = Create_Exception_Log()
 
