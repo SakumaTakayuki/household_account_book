@@ -1,5 +1,12 @@
 # 定数
 class Const:
+    # 初期管理者
+    class Admin:
+        USER_ID = "admin"
+        NAME = "管理者"
+        PASSWORD = "admin"
+        USER_ID = "admin"
+
     # ファイルパス
     class FilePath:
         EXCEPTION_FOLDER = "log"
@@ -28,3 +35,16 @@ class Const:
     # 文字
     class Const_Text:
         TEXT_BLANK = ""
+        LIST = "一覧"
+
+    # テーブル名
+    class Table_Name:
+        USERS = "users"
+
+    class Fill_Kbn:
+        FIRST = "1行目"
+        LIST = "一覧"
+
+    class Del_flg:
+        NON_DELETE = "0"
+        DELETE = "1"

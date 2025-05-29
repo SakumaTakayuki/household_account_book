@@ -10,14 +10,18 @@ class Message:
         FILL = "{0}：{1} 取得 {2}件"
         Fill_NO_ROW = "{0}：{1} 取得 0件"
         INSERT = "{0}：{1} 追加"
+        NON_INSERT = "{0}：{1} 追加 ID重複"
         UPDATE = "{0}：{1} 更新"
         NON_UPDATE = "{0}：{1} 更新 排他エラー"
+        DELETE = "{0}：{1} 削除"
+        NON_DELETE = "{0}：{1} 削除 排他エラー"
 
     # メッセージボックス用
     class Message_Box:
         # INFO
         HAB001I = "新規登録が完了しました。"
         HAB002I = "更新が完了しました。"
+        HAB003I = "削除が完了しました。"
         # CAUTION
         HAB001C = "削除されたため表示できません。"
         HAB002C = "同じユーザーIDのユーザーが存在します。\nユーザーIDを変更して登録してください。"

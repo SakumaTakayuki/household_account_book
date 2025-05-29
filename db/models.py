@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Text, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Text, String, Integer, DateTime, BigInteger, ForeignKey
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -32,6 +32,8 @@ class User(Bass):
     update_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=True, onupdate=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))
     )
+    # update_seq
+    update_seq: Mapped[int] = mapped_column(BigInteger, nullable=False, default=1)
 
 
 # 家計簿詳細

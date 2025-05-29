@@ -21,6 +21,6 @@ class Create_Table(Engine):
         create_row = user_adapter.user_row
         create_row.user_id = self.const.Admin.USER_ID
         create_row.name = self.const.Admin.NAME
-        create_row.password = self.const.Admin.PAAWORD
+        create_row.password = self.const.Admin.PASSWORD
         create_row.entry_user_id = self.const.Admin.USER_ID
         user_adapter.create_user(create_row)
