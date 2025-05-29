@@ -13,7 +13,7 @@ class Engine:
         self.engine = create_engine("sqlite:///db/example.db", echo=True)
         self.inspector = inspect(self.engine)
         # セッションクラス
-        self.session = Session(self.engine)
+        self.session = Session(self.engine, expire_on_commit=False)
         # ログクラス
         self.log_row = Log()
         # メッセージクラス
