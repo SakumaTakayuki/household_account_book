@@ -17,10 +17,10 @@ class User_Adapter(Engine):
             self.const.Log_Process.INSERT,
             self.const.Log_Function.USERS,
         )
-        if arg_fill_kbn == self.const.Fill_Kbn.LIST:
-            fill_kbn = self.const.Const_Text.LIST
-        else:
+        if arg_fill_kbn == self.const.Fill_Kbn.FIRST:
             fill_kbn = arg_where_user_id
+        else:
+            fill_kbn = self.const.Const_Text.LIST
         if self.create_log(
             self.const.Log_Kinds.START,
             str_log_function_id,
@@ -34,7 +34,10 @@ class User_Adapter(Engine):
             return_user.return_message_box = self.exception_log_exception()
             return return_user
         else:
-            stmt = select(User).where(User.user_id == arg_where_user_id)
+            if arg_fill_kbn == self.const.Fill_Kbn.FIRST:
+                stmt = select(User).where(User.user_id == arg_where_user_id)
+            else:
+                stmt = select(User)
             try:
                 select_row = self.session.scalars(stmt).all()
                 if len(select_row) == 0:
