@@ -10,7 +10,7 @@ class My_Control:
             row_button_width = 50
             row_button_height = 50
             row_width = 100
-            row_height = 50
+            row_height = 40
             topfirst_row_border_config = ft.border.all(2.0, ft.Colors.BLACK)
             topinside_row_border_config = ft.border.only(
                 top=ft.border.BorderSide(2.0, ft.Colors.BLACK),
@@ -19,21 +19,37 @@ class My_Control:
             )
             insidefirst_row_border_config = ft.border.only(
                 left=ft.border.BorderSide(2.0, ft.Colors.BLACK),
-                right=ft.border.BorderSide(1.0, ft.Colors.BLACK),
+                right=ft.border.BorderSide(2.0, ft.Colors.BLACK),
                 bottom=ft.border.BorderSide(1.0, ft.Colors.BLACK),
             )
             insideinside_row_border_config = ft.border.only(
                 right=ft.border.BorderSide(1.0, ft.Colors.BLACK),
                 bottom=ft.border.BorderSide(1.0, ft.Colors.BLACK),
             )
+            insideend_row_border_config = ft.border.only(
+                right=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+                bottom=ft.border.BorderSide(1.0, ft.Colors.BLACK),
+            )
+            endfirst_row_border_config = ft.border.only(
+                left=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+                right=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+                bottom=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+            )
+            endinside_row_border_config = ft.border.only(
+                right=ft.border.BorderSide(1.0, ft.Colors.BLACK),
+                bottom=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+            )
+            endend_row_border_config = ft.border.only(
+                right=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+                bottom=ft.border.BorderSide(2.0, ft.Colors.BLACK),
+            )
             # 列名作成
             i = 999
-            test1 = ft.Row(
+            columu_title = ft.Row(
                 [
                     ft.Container(
                         width=50,
                         height=50,
-                        padding=10,
                         bgcolor=ft.Colors.with_opacity(
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
@@ -41,10 +57,14 @@ class My_Control:
                         data=i,
                     ),
                     ft.Container(
-                        content=ft.Text(f"利用日時"),
+                        content=ft.Text(
+                            value=f"利用日時",
+                            weight=ft.FontWeight.BOLD,
+                        ),
                         width=200,
                         height=50,
-                        padding=10,
+                        padding=ft.padding.only(left=5),
+                        alignment=ft.alignment.center_left,
                         bgcolor=ft.Colors.with_opacity(
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
@@ -58,10 +78,10 @@ class My_Control:
                         ),
                     ),
                     ft.Container(
-                        content=ft.Text(f"入出金区分"),
+                        content=ft.Text(value=f"入出金区分", weight=ft.FontWeight.BOLD),
                         width=200,
                         height=50,
-                        padding=10,
+                        alignment=ft.alignment.center_left,
                         bgcolor=ft.Colors.with_opacity(
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
@@ -75,10 +95,10 @@ class My_Control:
                         ),
                     ),
                     ft.Container(
-                        content=ft.Text(f"金額"),
+                        content=ft.Text(value=f"金額", weight=ft.FontWeight.BOLD),
                         width=200,
                         height=50,
-                        padding=10,
+                        alignment=ft.alignment.center_left,
                         bgcolor=ft.Colors.with_opacity(
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
@@ -92,10 +112,10 @@ class My_Control:
                         ),
                     ),
                     ft.Container(
-                        content=ft.Text(f"詳細種類"),
+                        content=ft.Text(value=f"詳細種類", weight=ft.FontWeight.BOLD),
                         width=200,
                         height=50,
-                        padding=10,
+                        alignment=ft.alignment.center_left,
                         bgcolor=ft.Colors.with_opacity(
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
@@ -115,42 +135,55 @@ class My_Control:
             testlist = []
             row_count = 50
             for i in range(0, row_count):
-                first_column_border_config = insidefirst_row_border_config
-                inside_column_border_config = insideinside_row_border_config
+                if i == row_count - 1:
+                    first_row_border_config = endfirst_row_border_config
+                    inside_row_border_config = endinside_row_border_config
+                    end_row_border_config = endend_row_border_config
+                else:
+                    first_row_border_config = insidefirst_row_border_config
+                    inside_row_border_config = insideinside_row_border_config
+                    end_row_border_config = insideend_row_border_config
                 test = ft.Row(
                     [
                         ft.Container(
-                            content=ft.Button(
-                                text="詳",
-                                bgcolor=ft.Colors.with_opacity(
-                                    0.0, ft.Colors.PRIMARY_CONTAINER
+                            ft.Container(
+                                content=ft.TextButton(
+                                    content=ft.Text(
+                                        "詳",
+                                        size=12,
+                                        color=ft.Colors.BLACK,
+                                        text_align=ft.TextAlign.CENTER,
+                                    ),
+                                    data=i,
+                                    on_click=lambda e: My_Control.HAB_LIST.page_go(
+                                        self.page,
+                                        e,
+                                        testConlist,
+                                        ft.Colors.RED_ACCENT_100,
+                                    ),
+                                    expand=True,
                                 ),
-                                data=i,
-                                on_click=lambda e: My_Control.HAB_LIST.page_go(
-                                    self.page,
-                                    e,
-                                    testConlist,
-                                    ft.Colors.RED_ACCENT_100,
-                                ),
+                                alignment=ft.alignment.center,
+                                bgcolor=ft.Colors.GREY,
+                                border=ft.border.all(1.0),
+                                border_radius=10,
                             ),
                             width=50,
                             height=50,
-                            padding=10,
                             bgcolor=ft.Colors.with_opacity(
                                 0.0, ft.Colors.PRIMARY_CONTAINER
                             ),
-                            border=first_column_border_config,
+                            border=first_row_border_config,
                             data=i,
                         ),
                         ft.Container(
                             content=ft.Text(f"testB{i}"),
-                            width=200,
+                            width=199.5,
                             height=50,
-                            padding=10,
                             bgcolor=ft.Colors.with_opacity(
                                 0.0, ft.Colors.PRIMARY_CONTAINER
                             ),
-                            border=inside_column_border_config,
+                            border=inside_row_border_config,
                             data=i,
                             on_click=lambda e: My_Control.HAB_LIST.on_child_click(
                                 self.page,
@@ -167,7 +200,7 @@ class My_Control:
                             bgcolor=ft.Colors.with_opacity(
                                 0.0, ft.Colors.PRIMARY_CONTAINER
                             ),
-                            border=inside_column_border_config,
+                            border=inside_row_border_config,
                             data=i,
                             on_click=lambda e: My_Control.HAB_LIST.on_child_click(
                                 self.page,
@@ -184,7 +217,7 @@ class My_Control:
                             bgcolor=ft.Colors.with_opacity(
                                 0.0, ft.Colors.PRIMARY_CONTAINER
                             ),
-                            border=inside_column_border_config,
+                            border=inside_row_border_config,
                             data=i,
                             on_click=lambda e: My_Control.HAB_LIST.on_child_click(
                                 self.page,
@@ -201,7 +234,7 @@ class My_Control:
                             bgcolor=ft.Colors.with_opacity(
                                 0.0, ft.Colors.PRIMARY_CONTAINER
                             ),
-                            border=inside_column_border_config,
+                            border=end_row_border_config,
                             data=i,
                             on_click=lambda e: My_Control.HAB_LIST.on_child_click(
                                 self.page,
@@ -216,17 +249,17 @@ class My_Control:
                 testlist.append(test)
             testConlist = []
             testCon0 = ft.Container()
-            testCon0.content = test1
+            testCon0.content = columu_title
             testCon0.width = (
-                test1.controls[0].width
-                + test1.controls[1].width
-                + test1.controls[2].width
-                + test1.controls[3].width
-                + test1.controls[4].width
+                columu_title.controls[0].width
+                + columu_title.controls[1].width
+                + columu_title.controls[2].width
+                + columu_title.controls[3].width
+                + columu_title.controls[4].width
             )
             testConlist.append(testCon0)
             # 作成行をコンテナに入れる
-            for i in range(0, row_count):
+            for i in range(1, row_count):
                 testCon = ft.Container()
                 testCon.content = testlist[i]
                 testCon.width = (
