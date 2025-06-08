@@ -5,7 +5,12 @@ class Const:
         USER_ID = "admin"
         NAME = "管理者"
         PASSWORD = "admin"
-        USER_ID = "admin"
+
+    # ログイン認証用ユーザー
+    class Login:
+        USER_ID = "login"
+        NAME = "ログイン"
+        PASSWORD = "login"
 
     # ファイルパス
     class FilePath:
@@ -41,10 +46,17 @@ class Const:
     class Table_Name:
         USERS = "users"
 
+    # 取得区分
     class Fill_Kbn:
         FIRST = "1行目"
         LIST = "一覧"
 
+    # 削除フラグ
     class Del_flg:
         NON_DELETE = "0"
         DELETE = "1"
+
+    # 画面名
+    class display:
+        LOGIN = "ログイン"
+        USER_MASTER = "ユーザーマスタ"
