@@ -32,8 +32,8 @@ class User(Bass):
     update_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=True, onupdate=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))
     )
-    # update_seq
-    update_seq: Mapped[int] = mapped_column(BigInteger, nullable=False, default=1)
+    # 更新管理
+    update_version: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
 
 
 # 家計簿詳細
@@ -69,6 +69,8 @@ class HAB_Detail(Bass):
     update_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=True, onupdate=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))
     )
+    # 更新管理
+    update_version: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
 
 
 # ログ
@@ -119,3 +121,5 @@ class Master(Bass):
     update_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=True, onupdate=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))
     )
+    # 更新管理
+    update_version: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
