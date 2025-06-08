@@ -8,6 +8,36 @@ class My_Control:
             self.page = arg_page
             self.control = None
 
+        def on_child_click(page, e, parent_container: ft.Container):
+            """
+            子コントロールがクリックされた時のイベントハンドラ
+            page: ページ
+            e: コントロールイベント
+            parent_container: 親コンテナリスト
+            """
+            int1 = e.control.data
+            for item in parent_container:
+                item.bgcolor = ft.Colors.WHITE
+            parent_container[int1 + 1].bgcolor = ft.Colors.GREY
+            page.update()
+
+        def page_go(page, e, parent_container: ft.Container):
+            """
+            [詳]ボタンがクリックされた時のイベントハンドラ
+            page: ページ
+            e: コントロールイベント
+            parent_container: 親コンテナリスト
+            """
+            int1 = e.control.data
+            for item in parent_container:
+                item.bgcolor = ft.Colors.WHITE
+            parent_container[int1 + 1].bgcolor = ft.Colors.GREY
+            page.update()
+            n = len(page.views) - 1
+            page.views[n].data = int1
+
+            page.go("/detail")
+
         def set_data_list(self, arg_column_name, arg_data_list):
             self.control = None
             column_name = arg_column_name
@@ -158,11 +188,11 @@ class My_Control:
             cont_list.append(cont_column)
             # 作成行をコンテナに入れる
             for content in detail_row:
-                testCon = ft.Container()
-                testCon.content = content
-                testCon.width = row_button_width + row_width * len(column_name)
-                testCon.data = lambda: content.controls[0].data
-                cont_list.append(testCon)
+                cont_row = ft.Container()
+                cont_row.content = content
+                cont_row.width = row_button_width + row_width * len(column_name)
+                cont_row.data = lambda: content.controls[0].data
+                cont_list.append(cont_row)
             # Columnを作成し、その中にheader_text、Divider、row1、row2、row3を追加
             self.control = ft.Column(
                 controls=cont_list,
@@ -172,32 +202,81 @@ class My_Control:
                 expand=True,
             )
 
-        def on_child_click(page, e, parent_container: ft.Container):
+    # メッセージボックス
+    class Msgbox(ft.AlertDialog):
+        def __init__(self, arg_title, arg_content):
             """
-            子コントロールがクリックされた時のイベントハンドラ
-            page: ページ
-            e: コントロールイベント
-            parent_container: 親コンテナリスト
+            メッセージボックス作成
+            引数
+                arg_title：メッセージID
+                arg_content：メッセージ内容
             """
-            int1 = e.control.data
-            for item in parent_container:
-                item.bgcolor = ft.Colors.WHITE
-            parent_container[int1 + 1].bgcolor = ft.Colors.GREY
-            page.update()
+            super().__init__(
+                modal=True,
+                title=ft.Text(
+                    f"【{arg_title}】",
+                    size=18,
+                    weight=ft.FontWeight.BOLD,
+                ),
+                content=ft.Text(f"{arg_content}", size=18),
+                actions=[
+                    ft.TextButton("はい", on_click=lambda e: self.page.close(self)),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
 
-        def page_go(page, e, parent_container: ft.Container):
-            """
-            [詳]ボタンがクリックされた時のイベントハンドラ
-            page: ページ
-            e: コントロールイベント
-            parent_container: 親コンテナリスト
-            """
-            int1 = e.control.data
-            for item in parent_container:
-                item.bgcolor = ft.Colors.WHITE
-            parent_container[int1 + 1].bgcolor = ft.Colors.GREY
-            page.update()
-            n = len(page.views) - 1
-            page.views[n].data = int1
-
-            page.go("/detail")
+    # ビュー
+    class MyView(ft.View):
+        def __init__(
+            self,
+            route=None,
+            controls=None,
+            appbar=None,
+            bottom_appbar=None,
+            floating_action_button=None,
+            floating_action_button_location=None,
+            navigation_bar=None,
+            drawer=None,
+            end_drawer=None,
+            vertical_alignment=None,
+            horizontal_alignment=None,
+            spacing=None,
+            padding=None,
+            bgcolor=ft.Colors.LIGHT_BLUE_50,
+            decoration=None,
+            foreground_decoration=None,
+            can_pop=None,
+            on_confirm_pop=None,
+            scroll=None,
+            auto_scroll=None,
+            fullscreen_dialog=None,
+            on_scroll_interval=None,
+            on_scroll=None,
+            adaptive=None,
+        ):
+            super().__init__(
+                route,
+                controls,
+                appbar,
+                bottom_appbar,
+                floating_action_button,
+                floating_action_button_location,
+                navigation_bar,
+                drawer,
+                end_drawer,
+                vertical_alignment,
+                horizontal_alignment,
+                spacing,
+                padding,
+                bgcolor,
+                decoration,
+                foreground_decoration,
+                can_pop,
+                on_confirm_pop,
+                scroll,
+                auto_scroll,
+                fullscreen_dialog,
+                on_scroll_interval,
+                on_scroll,
+                adaptive,
+            )
