@@ -14,7 +14,15 @@ class Const:
         NAME = "ログイン"
         PASSWORD = "login"
 
+<<<<<<< HEAD
 >>>>>>> a777732 (【const】画面名、ログイン時システムユーザー追加)
+=======
+    # エラー区分
+    class Log_Error_Kbn:
+        LOGFILE_CREATE_ERROR = 8
+        LOG_EXCEPTION_ERROR = 9
+
+>>>>>>> 0d7bd94 (【Engine】ログ出力周りの修正)
     # ファイルパス
     class FilePath:
         EXCEPTION_FOLDER = "log"
