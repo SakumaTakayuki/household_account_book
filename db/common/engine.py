@@ -24,42 +24,56 @@ class Engine:
         self.const = Const()
 
     # ログ作成
-    # 【引数】
-    #   arg_log_kinds：ログ種類,
-    #   arg_log_function_id：処理ID,
-    #   arg_log_detail：ログ詳細,
-    #   arg_entry_user_id：操作ユーザー
     def create_log(
         self, arg_log_kinds, arg_log_function_id, arg_log_detail, arg_entry_user_id
     ):
-        isError = False
+        """
+        ログを作成する
+        引数
+            arg_log_kinds：ログ種類,
+            arg_log_function_id：処理ID,
+            arg_log_detail：ログ詳細,
+            arg_entry_user_id：操作ユーザー
+        """
+        error_message = None
         # 引数を元にログクラスをインスタンス
-        log = Log(
-            log_kinds=arg_log_kinds,
-            function_id=arg_log_function_id,
-            log_detail=arg_log_detail,
-            user_id=arg_entry_user_id,
-        )
         try:
+            log = Log(
+                log_kinds=arg_log_kinds,
+                function_id=arg_log_function_id,
+                log_detail=arg_log_detail,
+                user_id=arg_entry_user_id,
+            )
             # インスタンスしたログをセッションに追加
             self.session.add(log)
             # データベースに反映
             self.session.commit()
-            return isError
+            return error_message
         except Exception as e:
             # 例外エラーテキストファイルを出力
             isError = self.create_exception_log.create_exception_log(
                 arg_log_function_id, e
             )
-            # 例外エラーテキストファイルを出力時に、例外エラーが発生したかを返す
-            # 発生:True 未発生:False
-            return isError
+            if isError == self.const.Log_Error_Kbn.LOGFILE_CREATE_ERROR:
+                # 例外エラーテキストファイルを出力失敗時、エラー
+                error_message = self.exception_log_exception()
+            elif isError == self.const.Log_Error_Kbn.LOG_EXCEPTION_ERROR:
+                # 例外エラーテキストファイルを出力成功時、エラー
+                error_message = Message_Box()
+                # インスタンスしたメッセージボックスにidとメッセージを代入
+                error_message.message_id = "HAB002W"
+                error_message.message_text = self.message.Message_Box.HAB002W
+            # 例外エラーメッセージを返す
+            return error_message
         finally:
             # セッションを閉じる
             self.session.close()
 
     # ログ出力時例外エラー用メッセージ作成
     def exception_log_exception(self):
+        """
+        ログ出力時の例外エラー用メッセージを作成する
+        """
         # メッセージボックスクラスをインスタンス
         message_box = Message_Box()
         # インスタンスしたメッセージボックスにidとメッセージを代入
@@ -68,12 +82,16 @@ class Engine:
         # インスタンスしたメッセージボックスを返す
         return message_box
 
-    # Engineクラス継承クラス例外エラー用メッセージ作成、ログ作成
-    #   arg_log_kinds：ログ種類,
-    #   arg_log_function_id：処理ID,
-    #   arg_log_detail：ログ詳細,
-    #   arg_entry_user_id：操作ユーザー
+    # 例外エラー用メッセージ作成、ログ作成
     def exception_log(self, arg_log_function_id, arg_e, arg_entry_user_id):
+        """
+        例外エラー用メッセージ作成、ログ作成
+        引数
+            arg_log_kinds：ログ種類,
+            arg_log_function_id：処理ID,
+            arg_log_detail：ログ詳細,
+            arg_entry_user_id：操作ユーザー
+        """
         # メッセージボックスクラスをインスタンス
         message_box = Message_Box()
         # インスタンスしたメッセージボックスにidとメッセージを代入

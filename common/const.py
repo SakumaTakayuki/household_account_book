@@ -12,6 +12,11 @@ class Const:
         NAME = "ログイン"
         PASSWORD = "login"
 
+    # エラー区分
+    class Log_Error_Kbn:
+        LOGFILE_CREATE_ERROR = 8
+        LOG_EXCEPTION_ERROR = 9
+
     # ファイルパス
     class FilePath:
         EXCEPTION_FOLDER = "log"
