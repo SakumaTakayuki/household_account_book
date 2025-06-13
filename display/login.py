@@ -1,6 +1,8 @@
 import flet as ft
 from db.login_adapter import Login_Adapter
 from common.my_control import My_Control
+from common.message import Message
+from common.const import Const
 
 
 # ログイン画面
@@ -55,6 +57,7 @@ class Login(My_Control.MyView):
                 padding=20,
             ),
         ]
+        # ウィンドウサイズと表示位置を設定
         arg_page.window.width = 505
         arg_page.window.height = 320
         arg_page.window.center()
@@ -70,14 +73,37 @@ class Login(My_Control.MyView):
         self.update()
         # idにユーザーIDを代入する
         id = self.controls[1].content.controls[0].value
+        # idの入力値チェック
+        if id == "":
+            msg = My_Control.Msgbox(
+                "HAB005C",
+                Message.Message_Box.HAB005C.format("ユーザーID"),
+            )
+            # 自作コントロールのメッセージボックスをログイン画面上に表示する
+            self.page.open(msg)
+            # 画面を活性にする
+            self.disabled = False
+            self.update()
+            return
         # passwordにパスワードを代入する
         password = self.controls[1].content.controls[1].value
+        # passwordの入力値チェック
+        if password == "":
+            msg = My_Control.Msgbox(
+                "HAB005C",
+                Message.Message_Box.HAB005C.format("パスワード"),
+            )
+            # 自作コントロールのメッセージボックスをログイン画面上に表示する
+            self.page.open(msg)
+            # 画面を活性にする
+            self.disabled = False
+            self.update()
+            return
         # ログインアダプターを使用し、ログイン認証を行う
         # user_rowにはユーザー情報、ログイン失敗メッセージが代入されている
         user_row = self.login_adapter.login(
             id,
             password,
-            self.login_adapter.const.Login.USER_ID,
         )
         # user_row.return_rowにユーザー情報がない場合
         if user_row.return_row is None:
