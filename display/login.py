@@ -3,6 +3,8 @@ from db.login_adapter import Login_Adapter
 from common.my_control import My_Control
 from common.message import Message
 from common.const import Const
+from common.method import CommonMethod
+from config import Config
 
 
 # ログイン画面
@@ -13,7 +15,7 @@ class Login(My_Control.MyView):
         # 画面ラベル作成
         self.display_label = ft.Container(
             content=ft.Text(
-                "ログイン",
+                Const.Display.LOGIN,
                 size=30,
                 weight=ft.FontWeight.BOLD,
             ),
@@ -37,7 +39,6 @@ class Login(My_Control.MyView):
             content=ft.Text("ログイン", size=18),
             width=100,
             height=40,
-            disabled=False,
             on_click=lambda e: Login.login_submit_click(self),
         )
         # controlに作成したコントロールを追加する
@@ -58,9 +59,9 @@ class Login(My_Control.MyView):
             ),
         ]
         # ウィンドウサイズと表示位置を設定
-        arg_page.window.width = 505
-        arg_page.window.height = 320
-        arg_page.window.center()
+        arg_page.window.width = Config.window_size.login.width
+        arg_page.window.height = Config.window_size.login.height
+        CommonMethod.center_non_update(arg_page)
         # "/login"が呼び出された時にcontrolが表示されるように設定
         super().__init__("/login", control)
 

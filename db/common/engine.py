@@ -5,12 +5,24 @@ from common.message import Message
 from common.create_exception_log import Create_Exception_Log
 from common.const import Const
 from common.message_box import Message_Box
+from sqlalchemy import create_engine
+import logging
 
 
 # DB接続
 class Engine:
     def __init__(self):
-        self.engine = create_engine("sqlite:///db/example.db", echo=True)
+        # logger = logging.getLogger("sqlalchemy.engine")
+        # logger.setLevel(logging.INFO)
+        # handler = logging.FileHandler(filename="sqlalchemy.log", encoding="utf-8")
+        # formatter = logging.Formatter(
+        #    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        # )
+        # handler.setFormatter(formatter)
+        # logger.addHandler(handler)
+        self.engine = create_engine(
+            "sqlite:///db/household_account_book.db", echo=False
+        )
         self.inspector = inspect(self.engine)
         # セッションクラス
         self.session = Session(self.engine, expire_on_commit=False)
@@ -36,6 +48,7 @@ class Engine:
             arg_entry_user_id：操作ユーザー
         """
         error_message = None
+        session = Session(self.engine, expire_on_commit=False)
         # 引数を元にログクラスをインスタンス
         try:
             log = Log(
@@ -45,9 +58,9 @@ class Engine:
                 user_id=arg_entry_user_id,
             )
             # インスタンスしたログをセッションに追加
-            self.session.add(log)
+            session.add(log)
             # データベースに反映
-            self.session.commit()
+            session.commit()
             return error_message
         except Exception as e:
             # 例外エラーテキストファイルを出力
@@ -67,7 +80,7 @@ class Engine:
             return error_message
         finally:
             # セッションを閉じる
-            self.session.close()
+            session.close()
 
     # ログ出力時例外エラー用メッセージ作成
     def exception_log_exception(self):

@@ -20,7 +20,7 @@ class Create_Exception_Log:
             f = open(
                 f"{Const.FilePath.EXCEPTION_FOLDER}/{Const.FilePath.EXCEPTION_FILE}",
                 "a+",
-                encoding="utf-888",
+                encoding="utf-8",
             )
             # 「現在時間   処理ID  例外エラー内容」を書き込む
             f.write(

@@ -1,47 +1,45 @@
 import flet as ft
-
-from db.create_table import Create_Table
-from db.user_adapter import User_Adapter
+from display import (
+    login,
+    HAB_list,
+    HAB_detail,
+    bulk_registration,
+    master_menu,
+    shop_master,
+    master,
+    CSV_master,
+    users,
+)
 
 
 def main(page: ft.Page):
-    page.title = "Flet counter example"
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.title = "家計簿アプリ"
+    page.window.resizable = False
 
-    create_table = Create_Table()
-    isCreate = create_table.create_table()
-    if isCreate:
-        create_table.create_user()
-
-    user_adapter = User_Adapter()
-    user_adapter.user_row.user_id = "admin"
-    user_adapter.user_row.entry_user_id = "admin"
-    return_user = user_adapter.fill_user(user_adapter.user_row)
-
-    txt_number = ft.TextField(
-        value=return_user.return_user_row[0].user_id,
-        text_align=ft.TextAlign.RIGHT,
-        width=100,
-    )
-
-    def minus_click(e):
-        txt_number.value = str(int(txt_number.value) - 1)
+    def route_change(e: ft.RouteChangeEvent):
+        if page.route == "/login":
+            page.views.append(login.Login(page))
+        elif page.route == "/HAB_list":
+            page.views.append(HAB_list.HAB_List(page, page.views[-1].data))
+        elif page.route == "/bulk_registration":
+            page.views.append(bulk_registration.Bulk_Registration(page))
+        elif page.route == "/HAB_detail":
+            page.views.append(HAB_detail.HAB_detail(page, page.views[-1].data))
+        elif page.route == "/master_menu":
+            page.views.append(master_menu.Master_Menu(page))
+        elif page.route == "/shop_master":
+            page.views.append(shop_master.Shop_Master_Display(page))
+        elif page.route == "/master":
+            page.views.append(master.Master_Display(page))
+        elif page.route == "/CSV_master":
+            page.views.append(CSV_master.CSV_Master_Display(page))
+        elif page.route == "/user":
+            page.views.append(users.Users_Display(page))
         page.update()
 
-    def plus_click(e):
-        txt_number.value = str(int(txt_number.value) + 1)
-        page.update()
-
-    page.add(
-        ft.Row(
-            [
-                ft.IconButton(ft.Icons.REMOVE, on_click=minus_click),
-                txt_number,
-                ft.IconButton(ft.Icons.ADD, on_click=plus_click),
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
-    )
+    page.on_route_change = route_change
+    page.go("/login")
 
 
-ft.app(main)
+if __name__ == "__main__":
+    ft.app(target=main)

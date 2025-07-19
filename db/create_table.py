@@ -1,6 +1,7 @@
 from db.models import Bass
 from db.common.engine import Engine
-from db.user_adapter import User_Adapter
+from db.users_adapter import Users_Adapter
+from db.models import User
 from werkzeug.security import generate_password_hash
 
 
@@ -18,12 +19,10 @@ class Create_Table(Engine):
             return False
 
     def create_user(self):
-        user_adapter = User_Adapter()
-        create_row = user_adapter.user_row
+        user_adapter = Users_Adapter()
+        create_row = User()
         create_row.user_id = self.const.Admin.USER_ID
         create_row.name = self.const.Admin.NAME
-        create_row.password = generate_password_hash(
-            self.const.Admin.PASSWORD, method="pbkdf2:sha256"
-        )
+        create_row.password = self.const.Admin.PASSWORD
         create_row.entry_user_id = self.const.Admin.USER_ID
-        user_adapter.create_user(create_row)
+        user_adapter.create_users(create_row, self.const.Admin.USER_ID)
