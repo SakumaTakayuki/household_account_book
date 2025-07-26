@@ -3,6 +3,7 @@ from common.my_control import My_Control
 from common.const import Const
 from common.method import CommonMethod
 from config import Config
+import datetime
 
 
 # 一括登録画面
@@ -33,7 +34,7 @@ class Master_Menu(My_Control.MyView):
         # CSV取込マスタボタン作成
         # ボタンクリックでCSV取込マスタ画面に遷移する
         self.CSV_master_button = ft.FilledButton(
-            content=ft.Text("CSV取込マスタ", size=18),
+            content=ft.Text("CSVマスタ", size=18),
             width=150,
             height=40,
             on_click=lambda e: self.go_CSV_master_page(),
@@ -93,9 +94,18 @@ class Master_Menu(My_Control.MyView):
         self.page.window.width = Config.window_size.HAB_list.width
         self.page.window.height = Config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
+        today = datetime.datetime.now()
+        year = today.strftime("%Y")
+        month = today.strftime("%m")
+        HAB_year_month = {
+            "year": year,
+            "month": month,
+        }
+        n = len(self.page.views) - 1
+        self.page.views[n].data = HAB_year_month
         # 画面を活性にする
         self.overlay.visible = False
-        self.page.go("/back")
+        self.page.go("/HAB_list")
 
     def go_shop_master_page(self):
         """
