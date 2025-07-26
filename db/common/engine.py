@@ -48,7 +48,6 @@ class Engine:
             arg_entry_user_id：操作ユーザー
         """
         error_message = None
-        session = Session(self.engine, expire_on_commit=False)
         # 引数を元にログクラスをインスタンス
         try:
             log = Log(
@@ -58,9 +57,9 @@ class Engine:
                 user_id=arg_entry_user_id,
             )
             # インスタンスしたログをセッションに追加
-            session.add(log)
+            self.session.add(log)
             # データベースに反映
-            session.commit()
+            self.session.commit()
             return error_message
         except Exception as e:
             # 例外エラーテキストファイルを出力
@@ -80,7 +79,7 @@ class Engine:
             return error_message
         finally:
             # セッションを閉じる
-            session.close()
+            self.session.close()
 
     # ログ出力時例外エラー用メッセージ作成
     def exception_log_exception(self):
