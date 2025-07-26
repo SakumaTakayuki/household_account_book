@@ -88,7 +88,7 @@ class Master_Display(My_Control.MyView):
             )
             # 名称テキストボックス
             self.m_text_textField = ft.TextField(
-                label=ft.Text("店舗名", size=18, weight=ft.FontWeight.BOLD),
+                label=ft.Text("名称", size=18, weight=ft.FontWeight.BOLD),
                 border=ft.border.all(width=1.0, color=ft.Colors.BLACK),
                 bgcolor=ft.Colors.WHITE,
                 width=350,
