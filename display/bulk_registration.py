@@ -72,7 +72,7 @@ class Bulk_Registration(My_Control.MyView):
                 content=ft.Text("登録", size=18),
                 width=100,
                 height=40,
-                on_click=lambda e: self.HAB_entry(),
+                on_click=lambda e: self.HAB_detail_list_check(),
             )
             # controlsに作成したコントロールを追加する
             controls = [
@@ -134,7 +134,7 @@ class Bulk_Registration(My_Control.MyView):
         取込結果一覧のデータをセット
         """
         # 一覧の列名取得
-        column_name_list = Const.HAB_list_column_name.column_name
+        column_name_list = Config.HAB_list_column_name.column_name
         if arg_file_path is not None:
             HAB_detail_list = []
             row_list = []
@@ -320,35 +320,77 @@ class Bulk_Registration(My_Control.MyView):
         self.page.window.width = Config.window_size.HAB_list.width
         self.page.window.height = Config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
-        # 画面を活性にする
-        self.overlay.visible = False
-        self.page.go("/back")
+        if self.is_update:
+            HAB_year_month = {
+                "year": self.keep_HAB_detail_list[
+                    len(self.keep_HAB_detail_list) - 1
+                ].HAB_at.year,
+                "month": f"{self.keep_HAB_detail_list[
+                    len(self.keep_HAB_detail_list) - 1
+                ].HAB_at.month:02}",
+            }
+            n = len(self.page.views) - 1
+            self.page.views[n].data = HAB_year_month
+            # 画面を活性にする
+            self.overlay.visible = False
+            self.page.go("/HAB_list")
+        else:
+            # 画面を活性にする
+            self.overlay.visible = False
+            self.page.go("/back")
 
-    def HAB_entry(self):
+    def HAB_detail_list_check(self):
         """
-        家計簿を登録する
+        取込データ確認
         """
         # 画面を非活性にする
         self.overlay.visible = True
         self.page.update()
         if self.file_name.value == "":
             msg = My_Control.Msgbox("HAB007C", Message.Message_Box.HAB007C)
+        elif len(self.keep_HAB_detail_list) == 0:
+            msg = My_Control.Msgbox("HAB009C", Message.Message_Box.HAB009C)
         else:
-            # 一括登録アダプターを使用し、新規登録を行う
-            # return_bulk_registrationには登録成功かエラーのメッセージが代入されている
-            return_bulk_registration = (
-                self.bulk_registration_adapter.bulk_registration_HAB_list(
-                    self.keep_HAB_detail_list,
-                    self.file_name.value,
-                    self.page.data[0].user_id,
-                )
+            msg = My_Control.Msgbox("HAB004I", Message.Message_Box.HAB004I)
+            msg.actions = [
+                ft.TextButton("はい", on_click=lambda e: self.HAB_entry(msg)),
+                ft.TextButton("いいえ", on_click=lambda e: self.page.close(msg)),
+            ]
+        self.page.open(msg)
+        # 画面を活性にする
+        self.overlay.visible = False
+        self.page.update()
+
+    def HAB_entry(self, arg_msg):
+        """
+        家計簿を登録する
+        """
+        self.page.close(arg_msg)
+        # 画面を非活性にする
+        self.overlay.visible = True
+        self.page.update()
+        # 一括登録アダプターを使用し、新規登録を行う
+        # return_bulk_registrationには登録成功かエラーのメッセージが代入されている
+        return_bulk_registration = (
+            self.bulk_registration_adapter.bulk_registration_HAB_list(
+                self.keep_HAB_detail_list,
+                self.file_name.value,
+                self.page.data[0].user_id,
             )
-            # return_bulk_registration.return_message_boxに代入されたメッセージ情報を
-            # 自作コントロールのメッセージボックスに渡しインスタンス化
-            msg = My_Control.Msgbox(
-                return_bulk_registration.return_message_box.message_id,
-                return_bulk_registration.return_message_box.message_text,
-            )
+        )
+        # return_bulk_registration.return_message_boxに代入されたメッセージ情報を
+        # 自作コントロールのメッセージボックスに渡しインスタンス化
+        msg = My_Control.Msgbox(
+            return_bulk_registration.return_message_box.message_id,
+            return_bulk_registration.return_message_box.message_text,
+        )
+        # メッセージ情報が論理削除成功の場合
+        if (
+            return_bulk_registration.return_message_box.message_id[-1]
+            == Const.Log_Kinds.INFO
+        ):
+            # 更新フラグを立てる
+            self.is_update = True
         self.page.open(msg)
         # 画面を活性にする
         self.overlay.visible = False
