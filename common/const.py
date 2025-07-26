@@ -112,12 +112,3 @@ class Const:
     class HABkinds_code:
         food_expenses = "01"
         salary = "02"
-
-    class HAB_list_column_name:
-        column_name = [
-            "利用日時",
-            "入出金区分",
-            "金額",
-            "詳細種類",
-            "家計簿詳細",
-        ]
