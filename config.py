@@ -80,7 +80,7 @@ class Config:
             height = 435
 
         class bulk_registration:
-            width = 1125
+            width = 1085
             height = 720
 
         class master_menu:
