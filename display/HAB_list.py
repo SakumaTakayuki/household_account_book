@@ -19,8 +19,8 @@ class HAB_List(My_Control.MyView):
         # 家計簿アダプターをインスタンス化
         self.HAB_list_adapter = HAB_List_Adapter()
         # 今日の日付を取得
+        today = datetime.datetime.now()
         if arg_HAB_year_month is None:
-            today = datetime.datetime.now()
             year = today.strftime("%Y")
             month = today.strftime("%m")
         else:
@@ -168,6 +168,12 @@ class HAB_List(My_Control.MyView):
                         max_length=1000,
                         text_size=18,
                     )
+                    # 引数arg_HAB_year_monthが今日でない場合
+                    if not (
+                        year == today.strftime("%Y") and month == today.strftime("%m")
+                    ):
+                        # 入力エリア初期化
+                        self.input_area_clear(year, month)
                     # 登録ボタン作成
                     # ボタンクリックで入力した家計簿を登録する
                     self.entry_button = ft.FilledButton(
@@ -245,7 +251,7 @@ class HAB_List(My_Control.MyView):
         row_list = []
         if fill_HAB_list.return_message_box.message_id is None:
             # 一覧の列名取得
-            column_name = Const.HAB_list_column_name.column_name
+            column_name = Config.HAB_list_column_name.column_name
             HAB_row: HAB_Detail
             # 取得した家計簿一覧をself.HAB_listにデータをセットできるように加工
             for HAB_row in fill_HAB_list.return_row:
@@ -332,6 +338,25 @@ class HAB_List(My_Control.MyView):
             )
             return msg
 
+    def input_area_clear(self, arg_year, arg_month):
+        """
+        入力エリアを初期化
+        """
+        self.datetime_dropdown.year.value = f"{arg_year}"
+        self.datetime_dropdown.month.value = f"{arg_month:02}"
+        self.datetime_dropdown.day.value = "01"
+        self.datetime_dropdown.hour.value = "00"
+        self.datetime_dropdown.minute.value = "00"
+        self.datetime_dropdown.year.data = f"{arg_year}"
+        self.datetime_dropdown.month.data = f"{arg_month:02}"
+        self.datetime_dropdown.day.data = "01"
+        self.datetime_dropdown.hour.data = "00"
+        self.datetime_dropdown.minute.data = "00"
+        self.HAB_kbn_dropdown.value_clear()
+        self.amount_textField.value = Const.Const_Text.TEXT_BLANK
+        self.HABkinds_dropdown.value_clear()
+        self.HABdetail_textField.value = Const.Const_Text.TEXT_BLANK
+
     def last_month_data_set(self):
         """
         前月の家計簿一覧のデータをセット
@@ -390,6 +415,8 @@ class HAB_List(My_Control.MyView):
                     self.year_month_dropdown.month.value = f"{month:02}"
                     self.year_month_dropdown.year.data = f"{year}"
                     self.year_month_dropdown.month.data = f"{month:02}"
+                    # 入力エリア初期化
+                    self.input_area_clear(year, month)
                     # 家計簿一覧の年月を代入
                     self.HAB_list_year = f"{year}"
                     self.HAB_list_month = f"{month:02}"
@@ -442,6 +469,8 @@ class HAB_List(My_Control.MyView):
                     self.year_month_dropdown.month.value = month
                     self.year_month_dropdown.year.data = year
                     self.year_month_dropdown.month.data = month
+                    # 入力エリア初期化
+                    self.input_area_clear(year, month)
                     # 家計簿一覧の年月を代入
                     self.HAB_list_year = year
                     self.HAB_list_month = month
@@ -511,6 +540,8 @@ class HAB_List(My_Control.MyView):
                     self.year_month_dropdown.month.value = f"{month:02}"
                     self.year_month_dropdown.year.data = f"{year}"
                     self.year_month_dropdown.month.data = f"{month:02}"
+                    # 入力エリア初期化
+                    self.input_area_clear(year, month)
                     # 家計簿一覧の年月を代入
                     self.HAB_list_year = f"{year}"
                     self.HAB_list_month = f"{month:02}"
@@ -557,6 +588,8 @@ class HAB_List(My_Control.MyView):
                     self.year_month_dropdown.month.value = arg_month
                     self.year_month_dropdown.year.data = arg_year
                     self.year_month_dropdown.month.data = arg_month
+                    # 入力エリア初期化
+                    self.input_area_clear(arg_year, arg_month)
                     # 家計簿一覧の年月を代入
                     self.HAB_list_year = arg_year
                     self.HAB_list_month = arg_month
@@ -591,9 +624,9 @@ class HAB_List(My_Control.MyView):
         self.page.update()
         n = len(self.page.views) - 1
         self.page.views[n].data = None
-        # 一括登録画面を表示する
         # 画面を活性にする
         self.overlay.visible = False
+        # 一括登録画面を表示する
         self.page.go("/bulk_registration")
 
     def go_master_menu_page(self):
