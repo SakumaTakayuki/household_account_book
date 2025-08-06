@@ -1,5 +1,6 @@
 import flet as ft
 from display import (
+    startup_confirmation,
     login,
     HAB_list,
     HAB_detail,
@@ -17,14 +18,16 @@ def main(page: ft.Page):
     page.window.resizable = False
 
     def route_change(e: ft.RouteChangeEvent):
-        if page.route == "/login":
+        if page.route == "/startup_confirmation":
+            page.views.append(startup_confirmation.Startup_Confirmation(page))
+        elif page.route == "/login":
             page.views.append(login.Login(page))
         elif page.route == "/HAB_list":
             page.views.append(HAB_list.HAB_List(page, page.views[-1].data))
-        elif page.route == "/bulk_registration":
-            page.views.append(bulk_registration.Bulk_Registration(page))
         elif page.route == "/HAB_detail":
             page.views.append(HAB_detail.HAB_detail(page, page.views[-1].data))
+        elif page.route == "/bulk_registration":
+            page.views.append(bulk_registration.Bulk_Registration(page))
         elif page.route == "/master_menu":
             page.views.append(master_menu.Master_Menu(page))
         elif page.route == "/shop_master":
@@ -38,7 +41,7 @@ def main(page: ft.Page):
         page.update()
 
     page.on_route_change = route_change
-    page.go("/login")
+    page.go("/startup_confirmation")
 
 
 if __name__ == "__main__":

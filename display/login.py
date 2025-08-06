@@ -4,12 +4,13 @@ from common.my_control import My_Control
 from common.message import Message
 from common.const import Const
 from common.method import CommonMethod
-from config import Config
+from config.config import Config
 
 
 # ログイン画面
 class Login(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
+        self.config = Config()
         # ログインアダプターをインスタンス化
         self.login_adapter = Login_Adapter()
         # 画面ラベル作成
@@ -59,8 +60,8 @@ class Login(My_Control.MyView):
             ),
         ]
         # ウィンドウサイズと表示位置を設定
-        arg_page.window.width = Config.window_size.login.width
-        arg_page.window.height = Config.window_size.login.height
+        arg_page.window.width = self.config.window_size.login.width
+        arg_page.window.height = self.config.window_size.login.height
         CommonMethod.center_non_update(arg_page)
         # "/login"が呼び出された時にcontrolが表示されるように設定
         super().__init__("/login", control)

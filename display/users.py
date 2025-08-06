@@ -6,13 +6,14 @@ from common.method import CommonMethod
 from db.users_adapter import Users_Adapter
 from db.models import User
 from common.message import Message
-from config import Config
+from config.config import Config
 
 
 # ユーザーマスタ画面
 class Users_Display(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
         self.page = arg_page
+        self.config = Config()
         self.fill_users_list = None
         self.isAddition = False
         self.update_version = None
@@ -153,8 +154,8 @@ class Users_Display(My_Control.MyView):
                 self.overlay,
             ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.users.width
-        self.page.window.height = Config.window_size.users.height
+        self.page.window.width = self.config.window_size.users.width
+        self.page.window.height = self.config.window_size.users.height
         self.page.window.center()
         # "/master"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/users", controls)
@@ -170,7 +171,7 @@ class Users_Display(My_Control.MyView):
         row_list = []
         if fill_users.return_message_box.message_id is None:
             # 一覧の列名取得
-            column_name = Config.users_column_name.column_name
+            column_name = self.config.users_column_name.column_name
             users_row: User
             # 取得したユーザーマスタ一覧をself.users_listにデータをセットできるように加工
             for users_row in fill_users.return_row:
@@ -182,7 +183,7 @@ class Users_Display(My_Control.MyView):
                 ]
                 row_list.append(row)
             # self.users_listにデータをセットする
-            self.users_list.set_data_list(column_name, row_list)
+            self.users_list.set_data_list(column_name, row_list, False)
             return None
         else:
             # fill_users.return_message_boxに代入されたメッセージ情報を
@@ -201,8 +202,8 @@ class Users_Display(My_Control.MyView):
         self.overlay.visible = True
         self.page.update()
         self.page.views.pop()
-        self.page.window.width = Config.window_size.master_menu.width
-        self.page.window.height = Config.window_size.master_menu.height
+        self.page.window.width = self.config.window_size.master_menu.width
+        self.page.window.height = self.config.window_size.master_menu.height
         CommonMethod.center_non_update(self.page)
         n = len(self.page.views) - 1
         self.page.views[n].data = None

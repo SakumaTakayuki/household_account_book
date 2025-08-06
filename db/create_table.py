@@ -12,10 +12,13 @@ class Create_Table(Engine):
 
     # DBにとadminユーザー作成
     def create_table(self):
-        if len(self.inspector.get_table_names()) == 0:
-            Bass.metadata.create_all(self.engine)
-            return True
-        else:
+        try:
+            if len(self.inspector.get_table_names()) == 0:
+                Bass.metadata.create_all(self.engine)
+                return True
+            else:
+                return True
+        except:
             return False
 
     def create_user(self):

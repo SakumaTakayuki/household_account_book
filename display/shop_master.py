@@ -5,13 +5,14 @@ from common.method import CommonMethod
 from db.shop_master_adapter import Shop_Master_Adapter
 from db.models import Shop_Master
 from common.message import Message
-from config import Config
+from config.config import Config
 
 
 # 店舗マスタ画面
 class Shop_Master_Display(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
         self.page = arg_page
+        self.config = Config()
         self.fill_shop_master_list = None
         self.update_version = None
         # オーバーレイ作成
@@ -137,8 +138,8 @@ class Shop_Master_Display(My_Control.MyView):
                 self.overlay,
             ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.shop_master.width
-        self.page.window.height = Config.window_size.shop_master.height
+        self.page.window.width = self.config.window_size.shop_master.width
+        self.page.window.height = self.config.window_size.shop_master.height
         self.page.window.center()
         # "/shop_master"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/shop_master", controls)
@@ -156,7 +157,7 @@ class Shop_Master_Display(My_Control.MyView):
         row_list = []
         if fill_shop_master.return_message_box.message_id is None:
             # 一覧の列名取得
-            column_name = Config.shop_master_column_name.column_name
+            column_name = self.config.shop_master_column_name.column_name
             shop_master_row: Shop_Master
             # 取得した家計簿一覧をself.shop_master_listにデータをセットできるように加工
             for shop_master_row in fill_shop_master.return_row:
@@ -169,7 +170,7 @@ class Shop_Master_Display(My_Control.MyView):
                 ]
                 row_list.append(row)
             # self.shop_master_listにデータをセットする
-            self.shop_master_list.set_data_list(column_name, row_list)
+            self.shop_master_list.set_data_list(column_name, row_list, False)
             return None
         else:
             # fill_shop_master.return_message_boxに代入されたメッセージ情報を
@@ -188,8 +189,8 @@ class Shop_Master_Display(My_Control.MyView):
         self.overlay.visible = True
         self.page.update()
         self.page.views.pop()
-        self.page.window.width = Config.window_size.master_menu.width
-        self.page.window.height = Config.window_size.master_menu.height
+        self.page.window.width = self.config.window_size.master_menu.width
+        self.page.window.height = self.config.window_size.master_menu.height
         CommonMethod.center_non_update(self.page)
         n = len(self.page.views) - 1
         self.page.views[n].data = None

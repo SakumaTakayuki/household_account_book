@@ -3,79 +3,132 @@ from datetime import datetime
 from db.master_adapter import Master_Adapter
 from db.models import Master
 from common.const import Const
-from config import Config
-import time
+from config.config import Config
 
 
 class My_Control:
 
     class HAB_LIST:
+        """
+        一覧表
+        """
+
         def __init__(self, arg_page):
             self.page = arg_page
             self.control = None
+            """
+            保存用作成コントロール
+            """
             self.column_name = []
+            """
+            保存用列名
+            """
             self.data_list = []
+            """
+            保存用データ
+            """
             self.page_go_setting = None
-            self.details_button_setting: bool = True
+            """
+            詳細ボタン遷移先
+            """
             self.selected_row_value = None
+            """
+            保存用行番号
+            """
 
-        def on_child_click(self, e, parent_container: ft.Container):
+        def change_bgcolor(self, arg_parent_container: ft.Container, arg_row_no):
             """
-            子コントロールがクリックされた時のイベントハンドラ
-            page: ページ
-            e: コントロールイベント
-            parent_container: 親コンテナリスト
+            背景色変更
+            引数
+                arg_parent_container: 親コンテナリスト
+                arg_row_no: 選択行番号
             """
-            row_no = e.control.data
-            for item in parent_container:
+            # 全行の背景を白にする
+            for item in arg_parent_container:
                 item.bgcolor = ft.Colors.WHITE
-            parent_container[row_no + 1].bgcolor = ft.Colors.GREY
+            # 選択行の背景を灰色にする
+            arg_parent_container[arg_row_no + 1].bgcolor = ft.Colors.GREY
+
+        def on_child_click(self, e, arg_parent_container: ft.Container):
+            """
+            子コントロールがクリックされた時のイベント
+            引数
+                e: コントロールイベント
+                arg_parent_container: 親コンテナリスト
+            """
+            # 選択行番号取得
+            row_no = e.control.data
+            # 背景色変更
+            self.change_bgcolor(arg_parent_container, row_no)
+            # 選択行番号を保持する
             self.selected_row_value = row_no
             self.page.update()
 
-        def page_go(self, e, parent_container: ft.Container):
+        def page_go(self, e, arg_parent_container: ft.Container):
             """
-            [詳]ボタンがクリックされた時のイベントハンドラ
-            page: ページ
-            e: コントロールイベント
-            parent_container: 親コンテナリスト
+            [詳]ボタンがクリックされた時のイベント
+            引数
+                e: コントロールイベント
+                parent_container: 親コンテナリスト
             """
             # 画面を非活性にする
-            self.disabled = True
+            self.page.views[len(self.page.views) - 1].controls[1].visible = True
             self.page.update()
+            # 選択行番号取得
             row_no = e.control.data
-            for item in parent_container:
-                item.bgcolor = ft.Colors.WHITE
-            parent_container[row_no + 1].bgcolor = ft.Colors.GREY
+            # 背景色変更
+            self.change_bgcolor(arg_parent_container, row_no)
             n = len(self.page.views) - 1
-            self.page.views[n].data = parent_container[row_no + 1].data
+            # 行番号のdataをビューのdataに代入する
+            self.page.views[n].data = arg_parent_container[row_no + 1].data
+            # 画面を活性にする
+            self.page.views[len(self.page.views) - 1].controls[1].visible = False
+            # 遷移先を表示する
             self.page.go(f"/{self.page_go_setting}")
 
-        def set_data_list(self, arg_column_name, arg_data_list):
+        def set_data_list(
+            self, arg_column_name, arg_data_list, details_button_setting=True
+        ):
+            """
+            一覧表作成
+            引数
+                arg_column_name: 列名リスト
+                arg_data_list: データリスト
+            """
             self.control = None
+            # 列名がある場合、保存用列名に代入
             if arg_column_name is not None:
                 self.column_name = arg_column_name
+            # データがある場合、保存用データに代入
             if arg_data_list is not None:
                 self.data_list = arg_data_list
+            # サイズを設定
             row_button_width = 40
             row_button_height = 40
             column_width = 200
             row_width = 199.95
             row_height = 40
-            # 列名作成
-            column_row = []
-            column_data = 0
-            if self.details_button_setting:
-                column_row_0 = ft.Container(
+            # 列名行リスト
+            column_name_list = []
+            # 列番号
+            column_no = 0
+            # 詳細ボタン表示の場合
+            if details_button_setting:
+                # 詳細ボタン列作成
+                column_details_button = ft.Container(
                     width=row_button_width,
                     height=row_button_height,
                     bgcolor=ft.Colors.with_opacity(0.0, ft.Colors.PRIMARY_CONTAINER),
                     border=ft.border.all(1.0, ft.Colors.BLACK),
-                    data=column_data,
+                    data=column_no,
                 )
-                column_row.append(column_row_0)
+                # 列名行リストに詳細ボタン列を追加する
+                column_name_list.append(column_details_button)
+                # 列番号更新
+                column_no = column_no + 1
+            # 保存用列名の分繰り返す
             for name in self.column_name:
-                column_data = column_data + 1
+                # 列名作成
                 column = ft.Container(
                     content=ft.Text(
                         value=name,
@@ -87,36 +140,50 @@ class My_Control:
                     alignment=ft.alignment.center_left,
                     bgcolor=ft.Colors.with_opacity(0.0, ft.Colors.PRIMARY_CONTAINER),
                     border=ft.border.all(1.0, ft.Colors.BLACK),
-                    data=column_data,
+                    data=column_no,
                 )
-                column_row.append(column)
-            columu_name = ft.Row(controls=column_row, spacing=0)
+                # 列名行リストに作成した列名を追加する
+                column_name_list.append(column)
+                # 列番号更新
+                column_no = column_no + 1
+            # 列名行作成
+            columu_name_row = ft.Row(controls=column_name_list, spacing=0)
+            # コンテナリスト
             cont_list = []
+            # 列名行をコンテナに追加する
             cont_column = ft.Container(
-                content=columu_name,
+                content=columu_name_row,
                 bgcolor=ft.Colors.WHITE,
             )
-            if self.details_button_setting:
+            # コンテナの横幅を設定する
+            if details_button_setting:
                 cont_column.width = row_button_width + column_width * len(
                     self.column_name
                 )
             else:
                 cont_column.width = column_width * len(self.column_name)
             cont_list.append(cont_column)
-            # 行作成
-            row_data = 0
+            # 行番号
+            row_no = 0
+            # 保存用データの分繰り返す
             for data in self.data_list:
+                # 行データ用コンテナ作成
                 cont_row = ft.Container(bgcolor=ft.Colors.WHITE, data=data[0])
+                # SEQ番号削除
                 del data[0]
-                if self.details_button_setting:
+                # コンテナの横幅を設定する
+                if details_button_setting:
                     cont_row.width = row_button_width + row_width * len(
                         self.column_name
                     )
                 else:
                     cont_row.width = row_width * len(self.column_name)
-                row_cont_list = []
-                if self.details_button_setting:
-                    row_cont_0 = ft.Container(
+                # 各データ用コンテナリスト
+                detail_cont_list = []
+                # 詳細ボタン表示の場合
+                if details_button_setting:
+                    # 詳細ボタン作成
+                    row_cont_details_button = ft.Container(
                         ft.Container(
                             content=ft.TextButton(
                                 content=ft.Text(
@@ -125,13 +192,12 @@ class My_Control:
                                     color=ft.Colors.BLACK,
                                     text_align=ft.TextAlign.CENTER,
                                 ),
-                                data=row_data,
+                                data=row_no,
                                 on_click=lambda e: My_Control.HAB_LIST.page_go(
                                     self,
                                     e,
                                     cont_list,
                                 ),
-                                # expand=True,
                             ),
                             alignment=ft.alignment.center,
                             bgcolor=ft.Colors.GREY,
@@ -144,13 +210,15 @@ class My_Control:
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
                         border=ft.border.all(0.5, ft.Colors.BLACK),
-                        data=row_data,
+                        data=row_no,
                     )
-                    row_cont_list.append(row_cont_0)
-                index = 0
-                for row_detail in data:
+                    # 各データ用コンテナリストに詳細ボタンを追加する
+                    detail_cont_list.append(row_cont_details_button)
+                # データの分繰り返す
+                for data_detail in data:
+                    # 表示するデータ作成
                     row_cont = ft.Container(
-                        content=ft.Text(row_detail),
+                        content=ft.Text(data_detail),
                         width=row_width,
                         height=row_height,
                         padding=ft.padding.only(left=5),
@@ -159,34 +227,40 @@ class My_Control:
                         bgcolor=ft.Colors.with_opacity(
                             0.0, ft.Colors.PRIMARY_CONTAINER
                         ),
-                        data=row_data,
+                        data=row_no,
                         on_click=lambda e: My_Control.HAB_LIST.on_child_click(
                             self,
                             e,
                             cont_list,
                         ),
                     )
-                    row_cont_list.append(row_cont)
-                    index = index + 1
-                detail_row = ft.Row(controls=row_cont_list, spacing=0)
+                    # 各データ用コンテナリストに表示するデータを追加する
+                    detail_cont_list.append(row_cont)
+                # 表示するデータを1行に成形する
+                detail_row = ft.Row(controls=detail_cont_list, spacing=0)
+                # 成形した行が行データ用コンテナに表示されるよう設定する
                 cont_row.content = detail_row
+                # 行データ用コンテナをコンテナリストに追加する
                 cont_list.append(cont_row)
-
-                row_data = row_data + 1
-            # Columnを作成し、その中にheader_text、Divider、row1、row2、row3を追加
+                # 行番号更新
+                row_no = row_no + 1
+            # スクロールを表示するために、列コントロールにコンテナリストが表示されるよう設定
+            # コンテナに列コントロールが表示されるよう設定し、保存用作成コントロールに代入する
             self.control = ft.Container(
                 content=ft.Column(
                     controls=cont_list,
-                    spacing=0,  # Column内の要素間のスペース
-                    # horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Column内の要素を水平方向中央揃え
+                    spacing=0,
                     scroll=ft.ScrollMode.ALWAYS,
                 ),
                 height=450,
                 border=ft.border.all(2.0, ft.Colors.BLACK),
             )
 
-    # ビュー
     class MyView(ft.View):
+        """
+        背景色を設定したビュー
+        """
+
         def __init__(
             self,
             route=None,
@@ -240,10 +314,12 @@ class My_Control:
                 on_scroll,
                 adaptive,
             )
-            self.config = Config()
 
-    # オーバーレイ
     class MyOverlay:
+        """
+        自作オーバーレイ
+        """
+
         def __init__(self, arg_page: ft.Page):
             self.overlay = ft.Stack(
                 controls=[
@@ -256,12 +332,23 @@ class My_Control:
                 visible=False,
             )
 
-    # ヘッダ部エリア
     class Header_Area:
+        """
+        ヘッダ部エリア
+        """
+
         def __init__(
             self,
             arg_display_name,
         ):
+            """
+            引数
+                arg_display_name: 画面名
+            """
+            self.control = None
+            """
+            保存用作成コントロール
+            """
             # 画面ラベル作成
             self.display_label = ft.Container(
                 content=ft.Text(
@@ -288,8 +375,11 @@ class My_Control:
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             )
 
-    # メッセージボックス
     class Msgbox(ft.AlertDialog):
+        """
+        アクションを設定した自作メッセージボックス
+        """
+
         def __init__(self, arg_title, arg_content):
             """
             メッセージボックス作成
@@ -307,17 +397,23 @@ class My_Control:
                 content=ft.Text(f"{arg_content}", size=18),
                 actions_alignment=ft.MainAxisAlignment.END,
             )
+            # メッセージIDの末尾が'W'の場合
             if arg_title[-1] == Const.Log_Kinds.WARNING:
+                # ウィンドウが閉じるように設定
                 self.actions = [
                     ft.TextButton("はい", on_click=lambda e: self.page.window.close())
                 ]
             else:
+                # メッセージが閉じるように設定
                 self.actions = [
                     ft.TextButton("はい", on_click=lambda e: self.page.close(self))
                 ]
 
-    # ドロップダウン
     class MyDropdown(ft.Dropdown):
+        """
+        背景色、リストの背景色を白に設定した自作ドロップダウン
+        """
+
         def __init__(
             self,
             value=None,
@@ -532,24 +628,33 @@ class My_Control:
             self.value = self.options[0].key
             self.data = self.options[0].data
 
-    # 日付時刻選択ドロップダウン
     class Datetime_Dropdown:
+        """
+        自作日付時刻選択ドロップダウン
+        """
+
         def __init__(self, arg_page):
             self.page = arg_page
             self.control = None
+            """
+            保存用作成コントロール
+            """
             # 今日の日付取得
             self.today = datetime.now()
-            # 年作成
+            # 年リスト
             year_options = []
+            # コンフィグで設定した開始年から終了年までのリストを作成する
+            config = Config()
             for year in range(
-                Config.Datetime_Dropdown.start_year,
-                Config.Datetime_Dropdown.end_year + 1,
+                int(config.datetime_dropdown.start_year),
+                int(config.datetime_dropdown.end_year) + 1,
             ):
                 year_options.append(
                     ft.DropdownOption(
                         key=year, content=ft.Text(year, size=18), data=year
                     )
                 )
+            # 年ドロップダウン作成
             self.year = My_Control.MyDropdown(
                 label=ft.Text(value="年", size=18, weight=ft.FontWeight.BOLD),
                 options=year_options,
@@ -559,8 +664,9 @@ class My_Control:
                     self.year.value, self.month.value, self.day.value
                 ),
             )
-            # 月作成
+            # 月リスト
             month_options = []
+            # 月リスト作成
             for month in range(1, 13):
                 month = f"{month:02}"
                 month_options.append(
@@ -568,6 +674,7 @@ class My_Control:
                         key=month, content=ft.Text(month, size=18), data=month
                     )
                 )
+            # 月ドロップダウン作成
             self.month = My_Control.MyDropdown(
                 label=ft.Text(value="月", size=18, weight=ft.FontWeight.BOLD),
                 options=month_options,
@@ -577,8 +684,9 @@ class My_Control:
                     self.year.value, self.month.value, self.day.value
                 ),
             )
-            # 日作成
+            # 日リスト
             day_options = []
+            # 日ドロップダウン作成
             self.day = My_Control.MyDropdown(
                 label=ft.Text(value="日", size=18, weight=ft.FontWeight.BOLD),
                 options=day_options,
@@ -588,13 +696,15 @@ class My_Control:
                     self.year.value, self.month.value, self.day.value
                 ),
             )
+            # 日リスト作成
             self.day_create(
                 self.today.strftime("%Y"),
                 self.today.strftime("%m"),
                 self.today.strftime("%d"),
             )
-            # 時作成
+            # 時リスト
             hour_options = []
+            # 時リスト作成
             for hour in range(0, 24):
                 hour = f"{hour:02}"
                 hour_options.append(
@@ -602,15 +712,17 @@ class My_Control:
                         key=hour, content=ft.Text(hour, size=18), data=hour
                     )
                 )
+            # 時ドロップダウン作成
             self.hour = My_Control.MyDropdown(
                 label=ft.Text(value="時", size=18, weight=ft.FontWeight.BOLD),
                 options=hour_options,
                 width=100,
                 menu_height=200,
+                on_change=lambda e: self.hour.change_dropdown(e),
             )
-            self.hour.on_change = lambda e: self.hour.change_dropdown(e)
-            # 分作成
+            # 分リスト
             minute_options = []
+            # 分リスト作成
             for minute in range(0, 60):
                 minute = f"{minute:02}"
                 minute_options.append(
@@ -618,13 +730,14 @@ class My_Control:
                         key=minute, content=ft.Text(minute, size=18), data=minute
                     )
                 )
+            # 分ドロップダウン作成
             self.minute = My_Control.MyDropdown(
                 label=ft.Text(value="分", size=18, weight=ft.FontWeight.BOLD),
                 options=minute_options,
                 width=100,
                 menu_height=200,
+                on_change=lambda e: self.minute.change_dropdown(e),
             )
-            self.minute.on_change = lambda e: self.minute.change_dropdown(e)
             # 表示ボタン作成
             self.search = ft.FilledButton(
                 content=ft.Text("表示", size=18),
@@ -1397,7 +1510,7 @@ class My_Control:
                         value=value,
                         color=color_list[i],  # 色のリストから割り当てる
                         radius=150,  # 扇の半径
-                        title=f"{label}\n{percentage:.1f}%",  # ラベルとパーセンテージをタイトルに
+                        title=f"{label}\n{percentage:.1f}% {value}円",  # ラベルとパーセンテージをタイトルに
                         title_style=ft.TextStyle(
                             size=14, color=ft.Colors.BLACK, weight=ft.FontWeight.BOLD
                         ),

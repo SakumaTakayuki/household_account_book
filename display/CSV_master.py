@@ -6,13 +6,14 @@ from common.method import CommonMethod
 from db.CSV_master_adapter import CSV_Master_Adapter
 from db.models import CSV_Master
 from common.message import Message
-from config import Config
+from config.config import Config
 
 
 # CSVマスタ画面
 class CSV_Master_Display(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
         self.page = arg_page
+        self.config = Config()
         self.fill_CSV_master_list = None
         self.isAddition = False
         self.update_version = None
@@ -177,8 +178,8 @@ class CSV_Master_Display(My_Control.MyView):
                 self.overlay,
             ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.CSV_master.width
-        self.page.window.height = Config.window_size.CSV_master.height
+        self.page.window.width = self.config.window_size.CSV_master.width
+        self.page.window.height = self.config.window_size.CSV_master.height
         CommonMethod.center_non_update(self.page)
         # "/CSV_master"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/CSV_master", controls)
@@ -196,7 +197,7 @@ class CSV_Master_Display(My_Control.MyView):
         row_list = []
         if fill_CSV_master.return_message_box.message_id is None:
             # 一覧の列名取得
-            column_name = Config.CSV_master_column_name.column_name
+            column_name = self.config.CSV_master_column_name.column_name
             CSV_master_row: CSV_Master
             # 取得したCSVマスタ一覧をself.CSV_master_listにデータをセットできるように加工
             for CSV_master_row in fill_CSV_master.return_row:
@@ -211,7 +212,7 @@ class CSV_Master_Display(My_Control.MyView):
                 ]
                 row_list.append(row)
             # self.CSV_master_listにデータをセットする
-            self.CSV_master_list.set_data_list(column_name, row_list)
+            self.CSV_master_list.set_data_list(column_name, row_list, False)
             return None
         else:
             # fill_CSV_master.return_message_boxに代入されたメッセージ情報を
@@ -230,8 +231,8 @@ class CSV_Master_Display(My_Control.MyView):
         self.overlay.visible = True
         self.page.update()
         self.page.views.pop()
-        self.page.window.width = Config.window_size.master_menu.width
-        self.page.window.height = Config.window_size.master_menu.height
+        self.page.window.width = self.config.window_size.master_menu.width
+        self.page.window.height = self.config.window_size.master_menu.height
         CommonMethod.center_non_update(self.page)
         n = len(self.page.views) - 1
         self.page.views[n].data = None

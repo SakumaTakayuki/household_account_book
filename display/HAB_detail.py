@@ -5,7 +5,7 @@ from common.message import Message
 from common.const import Const
 from common.method import CommonMethod
 from db.models import HAB_Detail
-from config import Config
+from config.config import Config
 import datetime
 
 
@@ -13,6 +13,7 @@ import datetime
 class HAB_detail(My_Control.MyView):
     def __init__(self, arg_page: ft.Page, arg_SEQ):
         self.page = arg_page
+        self.config = Config()
         self.seq = arg_SEQ
         self.update_version = None
         self.is_update = False
@@ -111,8 +112,8 @@ class HAB_detail(My_Control.MyView):
                 self.overlay,
             ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.HAB_detail.width
-        self.page.window.height = Config.window_size.HAB_detail.height
+        self.page.window.width = self.config.window_size.HAB_detail.width
+        self.page.window.height = self.config.window_size.HAB_detail.height
         CommonMethod.center_non_update(self.page)
         # "/HAB_list"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/HAB_detail", controls)
@@ -182,8 +183,8 @@ class HAB_detail(My_Control.MyView):
         self.overlay.visible = True
         self.page.update()
         self.page.views.pop()
-        self.page.window.width = Config.window_size.HAB_list.width
-        self.page.window.height = Config.window_size.HAB_list.height
+        self.page.window.width = self.config.window_size.HAB_list.width
+        self.page.window.height = self.config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
         if self.is_update:
             HAB_year_month = {

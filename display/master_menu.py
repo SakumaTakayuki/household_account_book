@@ -2,7 +2,7 @@ import flet as ft
 from common.my_control import My_Control
 from common.const import Const
 from common.method import CommonMethod
-from config import Config
+from config.config import Config
 import datetime
 
 
@@ -10,6 +10,7 @@ import datetime
 class Master_Menu(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
         self.page = arg_page
+        self.config = Config()
         # オーバーレイ作成
         self.overlay = My_Control.MyOverlay(self.page).overlay
         # ヘッダ部エリア作成
@@ -77,8 +78,8 @@ class Master_Menu(My_Control.MyView):
             self.overlay,
         ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.master_menu.width
-        self.page.window.height = Config.window_size.master_menu.height
+        self.page.window.width = self.config.window_size.master_menu.width
+        self.page.window.height = self.config.window_size.master_menu.height
         CommonMethod.center_non_update(self.page)
         # "/master_menu"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/master_menu", controls)
@@ -91,8 +92,8 @@ class Master_Menu(My_Control.MyView):
         self.overlay.visible = True
         self.page.update()
         self.page.views.pop()
-        self.page.window.width = Config.window_size.HAB_list.width
-        self.page.window.height = Config.window_size.HAB_list.height
+        self.page.window.width = self.config.window_size.HAB_list.width
+        self.page.window.height = self.config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
         today = datetime.datetime.now()
         year = today.strftime("%Y")

@@ -5,7 +5,7 @@ from common.my_control import My_Control
 from common.message import Message
 from common.const import Const
 from common.method import CommonMethod
-from config import Config
+from config.config import Config
 import datetime
 import mojimoji
 import copy
@@ -15,6 +15,7 @@ import copy
 class Bulk_Registration(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
         self.page = arg_page
+        self.config = Config()
         self.is_update = False
         self.keep_HAB_detail_list = None
         # オーバーレイ作成
@@ -96,8 +97,8 @@ class Bulk_Registration(My_Control.MyView):
                 self.overlay,
             ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.bulk_registration.width
-        self.page.window.height = Config.window_size.bulk_registration.height
+        self.page.window.width = self.config.window_size.bulk_registration.width
+        self.page.window.height = self.config.window_size.bulk_registration.height
         CommonMethod.center_non_update(self.page)
         # "/bulk_registration"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/bulk_registration", controls)
@@ -134,7 +135,7 @@ class Bulk_Registration(My_Control.MyView):
         取込結果一覧のデータをセット
         """
         # 一覧の列名取得
-        column_name_list = Config.HAB_list_column_name.column_name
+        column_name_list = self.config.HAB_list_column_name.column_name
         if arg_file_path is not None:
             HAB_detail_list = []
             row_list = []
@@ -301,12 +302,12 @@ class Bulk_Registration(My_Control.MyView):
                                 f.close()
                         # 取得した取込結果一覧をself.import_results_listにデータをセットできるように加工
                         self.import_results_list.set_data_list(
-                            column_name_list, row_list
+                            column_name_list, row_list, False
                         )
                         self.keep_HAB_detail_list = HAB_detail_list
                         return None
         else:
-            self.import_results_list.set_data_list(column_name_list, None)
+            self.import_results_list.set_data_list(column_name_list, None, False)
             return None
 
     def back(self):
@@ -317,8 +318,8 @@ class Bulk_Registration(My_Control.MyView):
         self.overlay.visible = True
         self.page.update()
         self.page.views.pop()
-        self.page.window.width = Config.window_size.HAB_list.width
-        self.page.window.height = Config.window_size.HAB_list.height
+        self.page.window.width = self.config.window_size.HAB_list.width
+        self.page.window.height = self.config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
         if self.is_update:
             HAB_year_month = {

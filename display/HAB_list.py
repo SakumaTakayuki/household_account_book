@@ -6,14 +6,15 @@ from common.my_control import My_Control
 from common.message import Message
 from common.const import Const
 from common.method import CommonMethod
-from config import Config
 import datetime
+from config.config import Config
 
 
 # 家計簿一覧画面
 class HAB_List(My_Control.MyView):
     def __init__(self, arg_page: ft.Page, arg_HAB_year_month):
         self.page = arg_page
+        self.config = Config()
         # オーバーレイ作成
         self.overlay = My_Control.MyOverlay(self.page).overlay
         # 家計簿アダプターをインスタンス化
@@ -230,8 +231,8 @@ class HAB_List(My_Control.MyView):
                         self.overlay,
                     ]
         # ウィンドウサイズと表示位置を設定
-        self.page.window.width = Config.window_size.HAB_list.width
-        self.page.window.height = Config.window_size.HAB_list.height
+        self.page.window.width = self.config.window_size.HAB_list.width
+        self.page.window.height = self.config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
         # "/HAB_list"が呼び出された時にcontrolsが表示されるように設定
         super().__init__("/HAB_list", controls)
@@ -251,7 +252,7 @@ class HAB_List(My_Control.MyView):
         row_list = []
         if fill_HAB_list.return_message_box.message_id is None:
             # 一覧の列名取得
-            column_name = Config.HAB_list_column_name.column_name
+            column_name = self.config.HAB_list_column_name.column_name
             HAB_row: HAB_Detail
             # 取得した家計簿一覧をself.HAB_listにデータをセットできるように加工
             for HAB_row in fill_HAB_list.return_row:
@@ -265,7 +266,7 @@ class HAB_List(My_Control.MyView):
                 ]
                 row_list.append(row)
             # self.HAB_listにデータをセットする
-            self.HAB_list.set_data_list(column_name, row_list)
+            self.HAB_list.set_data_list(column_name, row_list, True)
             return None
         else:
             # fill_HAB_list.return_message_boxに代入されたメッセージ情報を
@@ -292,7 +293,7 @@ class HAB_List(My_Control.MyView):
             HAB_kbn_PieChart_data_list = {}
             for HAB_kbn_row in fill_HAB_kbn_PieChart_data.return_row:
                 HAB_kbn_PieChart_data_list[HAB_kbn_row.m_text] = HAB_kbn_row.amount
-            colors = Config.my_pieChart_colors.HAB_kbn_colors
+            colors = self.config.my_pieChart_colors.HAB_kbn_colors
             HAB_kbn_my_piechart_data = [HAB_kbn_PieChart_data_list, colors]
             # 入出金区分円グラフ作成
             self.HAB_kbn_PieChart = My_Control.MyPieChart(data=HAB_kbn_my_piechart_data)
@@ -322,7 +323,7 @@ class HAB_List(My_Control.MyView):
             HABkinds_PieChart_data_list = {}
             for HABkinds_row in fill_HABkinds_PieChart_data.return_row:
                 HABkinds_PieChart_data_list[HABkinds_row.m_text] = HABkinds_row.amount
-            colors = Config.my_pieChart_colors.HABkinds_colors
+            colors = self.config.my_pieChart_colors.HABkinds_colors
             HABkinds_my_piechart_data = [HABkinds_PieChart_data_list, colors]
             # 詳細種類円グラフ作成
             self.HABkinds_PieChart = My_Control.MyPieChart(
@@ -374,7 +375,7 @@ class HAB_List(My_Control.MyView):
         else:
             month = month - 1
         # コンフィグの日付時刻選択ドロップダウンの開始年と同じ年かつ1月の場合
-        if year == self.config.Datetime_Dropdown.start_year and month == 1:
+        if year == self.config.datetime_dropdown.start_year and month == 1:
             # 前月ボタンを非活性にする
             self.last_month_button.disabled = True
         else:
@@ -499,7 +500,7 @@ class HAB_List(My_Control.MyView):
         else:
             month = month + 1
         # コンフィグの日付時刻選択ドロップダウンの終了年と同じ年かつ12月の場合
-        if year == self.config.Datetime_Dropdown.end_year and month == 12:
+        if year == self.config.datetime_dropdown.end_year and month == 12:
             # 次月ボタンを非活性にする
             self.next_month_button.disabled = True
         else:
@@ -595,13 +596,13 @@ class HAB_List(My_Control.MyView):
                     self.HAB_list_month = arg_month
                     # 前月ボタンと次月ボタンの非活性判定をする
                     if (
-                        arg_year == str(self.config.Datetime_Dropdown.start_year)
+                        arg_year == str(self.config.datetime_dropdown.start_year)
                         and arg_month == "01"
                     ):
                         # 前月ボタンを非活性にする
                         self.last_month_button.disabled = True
                     elif (
-                        arg_year == str(self.config.Datetime_Dropdown.end_year)
+                        arg_year == str(self.config.datetime_dropdown.end_year)
                         and arg_month == "12"
                     ):
                         # 次月ボタンを非活性にする
