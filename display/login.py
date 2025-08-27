@@ -10,7 +10,6 @@ from config.config import Config
 # ログイン画面
 class Login(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
-
         self.page = arg_page
         self.config = Config()
         # オーバーレイ作成
@@ -50,7 +49,6 @@ class Login(My_Control.MyView):
         # ユーザーID入力エリア、パスワード入力エリア、ログインボタンは縦並びかつ枠線内にあるデザインにするため
         # ft.Container内にft.Column(縦並び)で配置し、ft.Containerに枠線を設定する
         control = [
-
             ft.Column(
                 controls=[
                     self.display_label,
@@ -109,7 +107,6 @@ class Login(My_Control.MyView):
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
             self.page.open(msg)
             # 画面を活性にする
-
             self.overlay.visible = False
             self.update()
             return
@@ -130,7 +127,6 @@ class Login(My_Control.MyView):
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
             self.page.open(msg)
             # 画面を活性にする
-
             self.overlay.visible = False
             self.update()
         else:

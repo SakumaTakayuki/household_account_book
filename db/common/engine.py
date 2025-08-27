@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine, inspect
-from common.error_message import Error_Message
 from sqlalchemy.orm import Session
 from db.models import Log
 from common.message import Message
@@ -8,6 +7,7 @@ from common.const import Const
 from common.message_box import Message_Box
 from sqlalchemy import create_engine
 import logging
+
 
 # DB接続
 class Engine:
@@ -56,28 +56,6 @@ class Engine:
                 log_detail=arg_log_detail,
                 user_id=arg_entry_user_id,
             )
-            # インスタンスしたログをセッションに追加
-            self.session.add(log)
-            # データベースに反映
-            self.session.commit()
-            return error_message
-        except Exception as e:
-            # 例外エラーテキストファイルを出力
-            isError = self.create_exception_log.create_exception_log(
-                arg_log_function_id, e
-            )
-            if isError == self.const.Log_Error_Kbn.LOGFILE_CREATE_ERROR:
-                # 例外エラーテキストファイルを出力失敗時、エラー
-                error_message = self.exception_log_exception()
-            elif isError == self.const.Log_Error_Kbn.LOG_EXCEPTION_ERROR:
-                # 例外エラーテキストファイルを出力成功時、エラー
-                error_message = Message_Box()
-                # インスタンスしたメッセージボックスにidとメッセージを代入
-                error_message.message_id = "HAB002W"
-                error_message.message_text = self.message.Message_Box.HAB002W
-            # 例外エラーメッセージを返す
-            return error_message
-        finally:
             # インスタンスしたログをセッションに追加
             self.session.add(log)
             # データベースに反映
