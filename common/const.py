@@ -47,6 +47,14 @@ class Const:
         ログ用種類
         """
 
+
+    # ファイルパス
+    class FilePath:
+        EXCEPTION_FOLDER = "log"
+        EXCEPTION_FILE = "exception_log.txt"
+
+    # ログ用種類
+    class Log_Kinds:
         START = "S"
         END = "E"
         INFO = "I"

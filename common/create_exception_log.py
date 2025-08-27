@@ -3,6 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 
+# ログ出力時例外エラーテキストファイル出力
 class Create_Exception_Log:
     """
     ログ出力時例外エラーテキストファイル出力
