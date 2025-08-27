@@ -1,6 +1,7 @@
 from db.models import Bass
 from db.common.engine import Engine
-from db.user_adapter import User_Adapter
+from db.users_adapter import Users_Adapter
+from db.models import User
 from werkzeug.security import generate_password_hash
 
 
@@ -11,28 +12,20 @@ class Create_Table(Engine):
 
     # DBにとadminユーザー作成
     def create_table(self):
-        if len(self.inspector.get_table_names()) == 0:
-            Bass.metadata.create_all(self.engine)
-            user_adapter = User_Adapter()
-            return True
-        else:
+        try:
+            if len(self.inspector.get_table_names()) == 0:
+                Bass.metadata.create_all(self.engine)
+                return True
+            else:
+                return True
+        except:
             return False
 
     def create_user(self):
-        user_adapter = User_Adapter()
-        create_row = user_adapter.user_row
-<<<<<<< HEAD
-        create_row.user_id = "admin"
-        create_row.name = "admin"
-        create_row.password = "admin"
-        create_row.entry_user_id = "admin"
-        user_adapter.create_row(create_row)
-=======
+        user_adapter = Users_Adapter()
+        create_row = User()
         create_row.user_id = self.const.Admin.USER_ID
         create_row.name = self.const.Admin.NAME
-        create_row.password = generate_password_hash(
-            self.const.Admin.PASSWORD, method="pbkdf2:sha256"
-        )
+        create_row.password = self.const.Admin.PASSWORD
         create_row.entry_user_id = self.const.Admin.USER_ID
-        user_adapter.create_user(create_row)
->>>>>>> a706f8f (【create_table】管理ユーザーのパスワードをハッシュ化)
+        user_adapter.create_users(create_row, self.const.Admin.USER_ID)

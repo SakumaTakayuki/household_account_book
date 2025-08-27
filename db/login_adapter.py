@@ -9,7 +9,7 @@ class Login_Adapter(Engine):
     def __init__(self):
         super().__init__()
         # 画面名を設定
-        self.display_name = self.const.display.LOGIN  # ログイン
+        self.display_name = self.const.Display.LOGIN  # ログイン
 
     # ログイン認証
     def login(self, arg_where_user_id, arg_password):
@@ -55,7 +55,7 @@ class Login_Adapter(Engine):
                     return_user.return_message_box.message_id = "HAB004C"
                     return_user.return_message_box.message_text = (
                         self.message.Message_Box.HAB004C.format(
-                            self.const.display.LOGIN
+                            self.const.Display.LOGIN
                         )
                     )
                     # ENDログ出力
@@ -102,7 +102,7 @@ class Login_Adapter(Engine):
                         return_user.return_message_box.message_id = "HAB004C"
                         return_user.return_message_box.message_text = (
                             self.message.Message_Box.HAB004C.format(
-                                self.const.display.LOGIN
+                                self.const.Display.LOGIN
                             )
                         )
                         # ENDログ出力

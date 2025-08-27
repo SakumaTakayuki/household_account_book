@@ -3,17 +3,24 @@ from db.login_adapter import Login_Adapter
 from common.my_control import My_Control
 from common.message import Message
 from common.const import Const
+from common.method import CommonMethod
+from config.config import Config
 
 
 # ログイン画面
 class Login(My_Control.MyView):
     def __init__(self, arg_page: ft.Page):
+
+        self.page = arg_page
+        self.config = Config()
+        # オーバーレイ作成
+        self.overlay = My_Control.MyOverlay(self.page).overlay
         # ログインアダプターをインスタンス化
         self.login_adapter = Login_Adapter()
         # 画面ラベル作成
         self.display_label = ft.Container(
             content=ft.Text(
-                "ログイン",
+                Const.Display.LOGIN,
                 size=30,
                 weight=ft.FontWeight.BOLD,
             ),
@@ -37,30 +44,36 @@ class Login(My_Control.MyView):
             content=ft.Text("ログイン", size=18),
             width=100,
             height=40,
-            disabled=False,
             on_click=lambda e: Login.login_submit_click(self),
         )
         # controlに作成したコントロールを追加する
         # ユーザーID入力エリア、パスワード入力エリア、ログインボタンは縦並びかつ枠線内にあるデザインにするため
         # ft.Container内にft.Column(縦並び)で配置し、ft.Containerに枠線を設定する
         control = [
-            self.display_label,
-            ft.Container(
-                content=ft.Column(
-                    controls=[
-                        self.id_TextField,
-                        self.password_TextField,
-                        self.submit,
-                    ]
-                ),
-                border=ft.border.all(2.0, ft.Colors.BLACK),
-                padding=20,
+
+            ft.Column(
+                controls=[
+                    self.display_label,
+                    ft.Container(
+                        content=ft.Column(
+                            controls=[
+                                self.id_TextField,
+                                self.password_TextField,
+                                self.submit,
+                            ]
+                        ),
+                        border=ft.border.all(2.0, ft.Colors.BLACK),
+                        padding=20,
+                    ),
+                ],
+                expand=True,
             ),
+            self.overlay,
         ]
         # ウィンドウサイズと表示位置を設定
-        arg_page.window.width = 505
-        arg_page.window.height = 320
-        arg_page.window.center()
+        arg_page.window.width = self.config.window_size.login.width
+        arg_page.window.height = self.config.window_size.login.height
+        CommonMethod.center_non_update(arg_page)
         # "/login"が呼び出された時にcontrolが表示されるように設定
         super().__init__("/login", control)
 
@@ -69,10 +82,10 @@ class Login(My_Control.MyView):
         ログインボタンクリックイベント
         """
         # 画面を非活性にする
-        self.disabled = True
+        self.overlay.visible = True
         self.update()
         # idにユーザーIDを代入する
-        id = self.controls[1].content.controls[0].value
+        id = self.controls[0].controls[1].content.controls[0].value
         # idの入力値チェック
         if id == "":
             msg = My_Control.Msgbox(
@@ -82,11 +95,11 @@ class Login(My_Control.MyView):
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
             self.page.open(msg)
             # 画面を活性にする
-            self.disabled = False
+            self.overlay.visible = False
             self.update()
             return
         # passwordにパスワードを代入する
-        password = self.controls[1].content.controls[1].value
+        password = self.controls[0].controls[1].content.controls[1].value
         # passwordの入力値チェック
         if password == "":
             msg = My_Control.Msgbox(
@@ -96,7 +109,8 @@ class Login(My_Control.MyView):
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
             self.page.open(msg)
             # 画面を活性にする
-            self.disabled = False
+
+            self.overlay.visible = False
             self.update()
             return
         # ログインアダプターを使用し、ログイン認証を行う
@@ -116,7 +130,8 @@ class Login(My_Control.MyView):
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
             self.page.open(msg)
             # 画面を活性にする
-            self.disabled = False
+
+            self.overlay.visible = False
             self.update()
         else:
             # self.page.dataにユーザー情報を代入し、どの画面でもユーザー情報を参照できるようにする
