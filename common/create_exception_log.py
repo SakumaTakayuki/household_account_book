@@ -3,8 +3,11 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 
-# ログ出力時例外エラーテキストファイル出力
 class Create_Exception_Log:
+    """
+    ログ出力時例外エラーテキストファイル出力
+    """
+
     # テキストファイル出力
     def create_exception_log(self, arg_function_id, arg_log_detail):
         """

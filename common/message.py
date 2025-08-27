@@ -1,12 +1,20 @@
-# メッセージ一覧
 class Message:
+    """
+    メッセージ一覧
+    """
 
-    # 処理ID用
     class Log_Function_Id:
+        """
+        処理ID用
+        """
+
         id = "{0}-{1}-{2}"
 
-    # ログ詳細用
     class Log_Message:
+        """
+        ログ詳細用
+        """
+
         LOGIN = "ログイン users：{0} 取得 {1}件"
         LOGIN_SUCCESS = "ログイン users：{0} 取得 {1}件 認証成功"
         LOGIN_ERROR = "ログイン users：{0} 取得 {1}件 認証失敗"
@@ -23,8 +31,11 @@ class Message:
         DELETE = "{0} {1}：{2} 削除"
         NON_DELETE = "{0} {1}：{2} 削除 排他エラー"
 
-    # メッセージボックス用
     class Message_Box:
+        """
+        メッセージボックス用
+        """
+
         # INFO
         HAB001I = "新規登録が完了しました。"
         HAB002I = "更新が完了しました。"

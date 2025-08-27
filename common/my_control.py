@@ -7,6 +7,9 @@ from config.config import Config
 
 
 class My_Control:
+    """
+    自作コントロール
+    """
 
     class HAB_LIST:
         """
@@ -346,9 +349,6 @@ class My_Control:
                 arg_display_name: 画面名
             """
             self.control = None
-            """
-            保存用作成コントロール
-            """
             # 画面ラベル作成
             self.display_label = ft.Container(
                 content=ft.Text(
@@ -636,9 +636,6 @@ class My_Control:
         def __init__(self, arg_page):
             self.page = arg_page
             self.control = None
-            """
-            保存用作成コントロール
-            """
             # 今日の日付取得
             self.today = datetime.now()
             # 年リスト
@@ -692,7 +689,7 @@ class My_Control:
                 options=day_options,
                 width=100,
                 menu_height=200,
-                on_change=lambda e: self.day_create(
+                on_change=lambda e: self.set_data(
                     self.year.value, self.month.value, self.day.value
                 ),
             )
@@ -790,9 +787,15 @@ class My_Control:
             if day > days:
                 day = days
             self.day.options = day_options
-            self.year.data = f"{year}"
-            self.month.data = f"{month:02}"
-            self.day.data = f"{day:02}"
+            self.set_data(year, month, day)
+
+        def set_data(self, arg_year, arg_month, arg_day):
+            """
+            dataに値を代入する
+            """
+            self.year.data = f"{arg_year}"
+            self.month.data = f"{arg_month:02}"
+            self.day.data = f"{arg_day:02}"
             self.page.update()
 
         def set_initial_value(self):
@@ -812,6 +815,10 @@ class My_Control:
 
     # 入出金区分ドロップダウン
     class HAB_Kbn_Dropdown(MyDropdown):
+        """
+        入出金区分ドロップダウン
+        """
+
         def __init__(
             self,
             value=None,
@@ -911,10 +918,13 @@ class My_Control:
             disabled=None,
             data=None,
         ):
+            # マスターアダプターインスタンス化
             master_adapter = Master_Adapter()
+            # 入出金区分取得
             HAB_kbn_list = master_adapter.fill_HAB_kbn()
             HAB_kbn_options = []
             HAB_kbn_row: Master
+            # オプションに入出金区分をセットする
             for HAB_kbn_row in HAB_kbn_list.return_row:
                 HAB_kbn_options.append(
                     ft.DropdownOption(
@@ -924,8 +934,10 @@ class My_Control:
                     )
                 )
             options = HAB_kbn_options
+            # 初期値の設定
             value = HAB_kbn_list.return_row[0].m_text
             data = HAB_kbn_list.return_row[0].m_code
+            # ドロップダウン変更時のメソッドを設定
             on_change = lambda e: self.change_dropdown(e)
             super().__init__(
                 value,
@@ -1028,6 +1040,10 @@ class My_Control:
 
     # 詳細種類ドロップダウン
     class HABkinds_Dropdown(MyDropdown):
+        """
+        詳細種類ドロップダウン
+        """
+
         def __init__(
             self,
             value=None,
@@ -1127,10 +1143,13 @@ class My_Control:
             disabled=None,
             data=None,
         ):
+            # マスターアダプターインスタンス化
             master_adapter = Master_Adapter()
+            # 詳細種類を取得
             HABkinds_list = master_adapter.fill_HABkinds()
             HABkinds_options = []
             HABkinds_row: Master
+            # オプションに詳細種類をセット
             for HABkinds_row in HABkinds_list.return_row:
                 HABkinds_options.append(
                     ft.DropdownOption(
@@ -1140,8 +1159,10 @@ class My_Control:
                     )
                 )
             options = HABkinds_options
+            # 初期値を設定
             value = HABkinds_list.return_row[0].m_text
             data = HABkinds_list.return_row[0].m_code
+            # ドロップダウン変更時のメソッドを設定
             on_change = lambda e: self.change_dropdown(e)
             super().__init__(
                 value,
@@ -1244,6 +1265,10 @@ class My_Control:
 
     # 会社選択ドロップダウン
     class CSV_Company_Dropdown(MyDropdown):
+        """
+        会社選択ドロップダウン
+        """
+
         def __init__(
             self,
             value=None,
@@ -1343,10 +1368,13 @@ class My_Control:
             disabled=None,
             data=None,
         ):
+            # マスターアダプターインスタンス化
             master_adapter = Master_Adapter()
+            # 会社名を取得
             CSV_company_list = master_adapter.fill_CSV_company()
             CSV_company_list_options = []
             CSV_company_list_row: Master
+            # オプションに会社名をセット
             for CSV_company_list_row in CSV_company_list.return_row:
                 CSV_company_list_options.append(
                     ft.DropdownOption(
@@ -1356,8 +1384,10 @@ class My_Control:
                     )
                 )
             options = CSV_company_list_options
+            # 初期値を設定
             value = CSV_company_list.return_row[0].m_text
             data = CSV_company_list.return_row[0].m_code
+            # ドロップダウン変更時のメソッドを設定
             on_change = lambda e: self.change_dropdown(e)
             super().__init__(
                 value,
@@ -1460,6 +1490,10 @@ class My_Control:
 
     # 円グラフ
     class MyPieChart(ft.PieChart):
+        """
+        円グラフ
+        """
+
         def __init__(
             self,
             sections=None,

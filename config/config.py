@@ -4,6 +4,10 @@ import json
 
 
 class Config:
+    """
+    コンフィグ
+    """
+
     def __init__(self):
         self.datetime_dropdown = datetime_dropdown()
         self.HAB_list_column_name = HAB_list_column_name()
@@ -13,6 +17,10 @@ class Config:
         self.users_column_name = users_column_name()
 
     class my_pieChart_colors:
+        """
+        円グラフ背景設定
+        """
+
         HAB_kbn_colors = [
             ft.Colors.GREEN_500,
             ft.Colors.RED_500,
@@ -30,6 +38,10 @@ class Config:
         ]
 
     class window_size:
+        """
+        画面サイズ設定
+        """
+
         class login:
             width = 505
             height = 320
