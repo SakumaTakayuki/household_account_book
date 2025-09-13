@@ -375,7 +375,7 @@ class HAB_List(My_Control.MyView):
         else:
             month = month - 1
         # コンフィグの日付時刻選択ドロップダウンの開始年と同じ年かつ1月の場合
-        if year == self.config.datetime_dropdown.start_year and month == 1:
+        if year == int(self.config.datetime_dropdown.start_year) and month == 1:
             # 前月ボタンを非活性にする
             self.last_month_button.disabled = True
         else:
@@ -438,6 +438,22 @@ class HAB_List(My_Control.MyView):
         year = today.strftime("%Y")
         month = today.strftime("%m")
         set_return = self.HAB_list_data_set(year, month)
+        # コンフィグの日付時刻選択ドロップダウンの開始年と同じ年かつ1月の場合
+        if year == int(self.config.datetime_dropdown.start_year) and month == 1:
+            # 前月ボタンを非活性にする
+            self.last_month_button.disabled = True
+            # 次月ボタンを活性にする
+            self.next_month_button.disabled = False
+        # コンフィグの日付時刻選択ドロップダウンの終了年と同じ年かつ12月の場合
+        elif year == int(self.config.datetime_dropdown.end_year) and month == 12:
+            # 前月ボタンを活性にする
+            self.last_month_button.disabled = False
+            # 次月ボタンを非活性にする
+            self.next_month_button.disabled = True
+        else:
+            # 前月ボタンと次月ボタンを活性にする
+            self.last_month_button.disabled = False
+            self.next_month_button.disabled = False
         # 家計簿一覧に表示するデータが取得できなかった場合
         if set_return is not None:
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
@@ -475,9 +491,6 @@ class HAB_List(My_Control.MyView):
                     # 家計簿一覧の年月を代入
                     self.HAB_list_year = year
                     self.HAB_list_month = month
-                    # 前月ボタンと次月ボタンを活性にする
-                    self.last_month_button.disabled = False
-                    self.next_month_button.disabled = False
         # 画面を活性にする
         self.overlay.visible = False
         # コントロールを更新する
@@ -500,7 +513,7 @@ class HAB_List(My_Control.MyView):
         else:
             month = month + 1
         # コンフィグの日付時刻選択ドロップダウンの終了年と同じ年かつ12月の場合
-        if year == self.config.datetime_dropdown.end_year and month == 12:
+        if year == int(self.config.datetime_dropdown.end_year) and month == 12:
             # 次月ボタンを非活性にする
             self.next_month_button.disabled = True
         else:
@@ -596,15 +609,19 @@ class HAB_List(My_Control.MyView):
                     self.HAB_list_month = arg_month
                     # 前月ボタンと次月ボタンの非活性判定をする
                     if (
-                        arg_year == str(self.config.datetime_dropdown.start_year)
+                        arg_year == self.config.datetime_dropdown.start_year
                         and arg_month == "01"
                     ):
                         # 前月ボタンを非活性にする
                         self.last_month_button.disabled = True
+                        # 次月ボタンを活性にする
+                        self.next_month_button.disabled = False
                     elif (
-                        arg_year == str(self.config.datetime_dropdown.end_year)
+                        arg_year == self.config.datetime_dropdown.end_year
                         and arg_month == "12"
                     ):
+                        # 前月ボタンを活性にする
+                        self.last_month_button.disabled = False
                         # 次月ボタンを非活性にする
                         self.next_month_button.disabled = True
                     else:
