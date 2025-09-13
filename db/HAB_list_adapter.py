@@ -159,7 +159,7 @@ class HAB_List_Adapter(Engine):
             try:
                 # 入出金区分を取得するSELECT文を作成
                 HAB_kbn_stmt = select(Master).where(
-                    Master.m_id == self.const.Master_ID.HAB_kbn
+                    Master.m_id == self.const.Master_ID.HAB_kbn,
                 )
                 # SELECT文を全件取得で実行する
                 select_HAB_kbn_row = self.session.scalars(HAB_kbn_stmt).all()
@@ -390,7 +390,7 @@ class HAB_List_Adapter(Engine):
                     error_message = self.create_log(
                         self.const.Log_Kinds.END,
                         str_log_function_id,
-                        self.message.Log_Message.FILL_HAB_kbn_PIECHART.format(
+                        self.message.Log_Message.FILL_HABkinds_PIECHART.format(
                             self.display_name,
                             self.const.Table_Name.HAB_DETAIL,
                             arg_where_year_month,
