@@ -78,7 +78,7 @@ class HAB_detail(My_Control.MyView):
         set_return = self.HAB_detail_data_set(self.seq)
         # 家計簿詳細画面に表示するデータが取得できなかった場合
         if set_return is not None:
-            controls = [set_return]
+            controls = [self.overlay]
             # 自作コントロールのメッセージボックスをログイン画面上に表示する
             self.page.open(set_return)
         else:
@@ -127,7 +127,9 @@ class HAB_detail(My_Control.MyView):
             arg_seq,
             self.page.data[0].user_id,
         )
+        # エラーがない場合
         if fill_HAB_detail.return_message_box.message_id is None:
+            # 各コントロールに取得したデータをセットする
             self.datetime_dropdown.year.value = fill_HAB_detail.return_row[0][
                 1
             ].strftime("%Y")
@@ -173,6 +175,12 @@ class HAB_detail(My_Control.MyView):
                 fill_HAB_detail.return_message_box.message_id,
                 fill_HAB_detail.return_message_box.message_text,
             )
+            # メッセージボックスのアクションを家計簿一覧に戻るよう設定
+            msg.actions = [
+                ft.TextButton("はい", on_click=lambda e: self.back()),
+            ]
+            # 家計簿一覧で最新情報が再取得されるように設定
+            self.is_update = True
             return msg
 
     def back(self):
@@ -186,7 +194,9 @@ class HAB_detail(My_Control.MyView):
         self.page.window.width = self.config.window_size.HAB_list.width
         self.page.window.height = self.config.window_size.HAB_list.height
         CommonMethod.center_non_update(self.page)
+        # 画面表示後、登録をした場合
         if self.is_update:
+            # 家計簿一覧画面で最新情報を取得するよう設定する
             HAB_year_month = {
                 "year": self.datetime_dropdown.year.data,
                 "month": self.datetime_dropdown.month.data,
@@ -304,6 +314,9 @@ class HAB_detail(My_Control.MyView):
         self.page.update()
 
     def delete_info_msg_yes(self):
+        """
+        論理削除で登録する
+        """
         # 家計簿詳細の論理削除するデータを作成する
         HAB_ditail_row = HAB_Detail()
         HAB_ditail_row.HAB_seq = self.seq
@@ -334,12 +347,18 @@ class HAB_detail(My_Control.MyView):
         self.page.update()
 
     def delete_complete_msg(self, arg_message_id):
-        if arg_message_id[-1] == Const.Log_Kinds.INFO:
-            self.back()
-        else:
+        """
+        削除完了後、家計簿一覧を表示する
+        """
+        if arg_message_id[-1] == Const.Log_Kinds.WARNING:
             self.page.window.close()
+        else:
+            self.back()
 
     def delete_info_msg_no(self, arg_msg):
+        """
+        削除を中断する
+        """
         # メッセージボックスを閉じる
         self.page.close(arg_msg)
         # 画面を活性にする
